@@ -6,7 +6,7 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.sigclc.backend.Exception.RecursoNoEncontradoException;
+import com.sigclc.backend.Usuarios.Exception.RecursoNoEncontradoException;
 import com.sigclc.backend.Usuarios.Mapper;
 import com.sigclc.backend.Usuarios.DTOs.UsuarioCreateDTO;
 import com.sigclc.backend.Usuarios.DTOs.UsuarioResponseDTO;
@@ -22,7 +22,6 @@ public class UsuariosServiceImp implements IUsuariosService {
 
     @Override
     public UsuarioResponseDTO crearUsuario(UsuarioCreateDTO usuario) {
-        // Sin validaciones adicionales; si algo falla, lo capturará el GlobalExceptionHandler
         UsuariosModel model = mapper.toModel(usuario);
         usuariosRepository.save(model);
         return mapper.toResponseDTO(model);
@@ -35,9 +34,8 @@ public class UsuariosServiceImp implements IUsuariosService {
 
     @Override
     public UsuariosModel buscarUsuarioPorId(ObjectId id) {
-        // Si no existe, lanzamos RecursoNoEncontradoException -> 404 por el handler
-        return usuariosRepository.findById(id)
-            .orElseThrow(() -> new RecursoNoEncontradoException("No existe usuario con id: " + id));
+        return usuariosRepository.findById(id).
+            orElseThrow(() -> new RecursoNoEncontradoException("No existe usuario con id: " + id ));
     }
 
     @Override
