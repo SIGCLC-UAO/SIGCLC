@@ -1,18 +1,19 @@
-package com.sigclc.backend.Usuarios;
+package com.sigclc.backend.Usuarios.DTOs;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class UsuarioCreateDTO {
+@AllArgsConstructor
+public class UsuarioUpdateDTO {
+
     private String nombre;
     private String apellido;
     private String email;
     private String rol;       // "lector" | "moderador" | "administrador"
-    private Long telefono;    // bsonType: "long"
-    private Long edad;        // bsonType: "long" (4..99)
+    private Long   telefono;  
+    private Long   edad;      
     private String ocupacion;
 }

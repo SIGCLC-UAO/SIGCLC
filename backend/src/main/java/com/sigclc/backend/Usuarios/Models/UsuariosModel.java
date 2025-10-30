@@ -1,4 +1,4 @@
-package com.sigclc.backend.Usuarios;
+package com.sigclc.backend.Usuarios.Models;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +27,7 @@ public class UsuariosModel {
     private String email;
     private String rol;          // "lector" | "moderador" | "administrador"
     private Long telefono;     
-    private Integer edad;           
+    private Long edad;           
     private String ocupacion;
 
     private List<LibroPropuesto> libroPropuesto = new ArrayList<>();
@@ -40,7 +40,7 @@ public class UsuariosModel {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class LibroPropuesto {
+    public class LibroPropuesto {
         private String estado;               // "Seleccionado" | "No Seleccionado" | "En Votacion"
         private ObjectId libroId;           
         private List<Votacion> votaciones = new ArrayList<>();
@@ -49,7 +49,7 @@ public class UsuariosModel {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Votacion {
+    public class Votacion {
         private String voto;                 // "Si" | "No"
         private String fechaVoto;            
         private ObjectId usuarioId;          // ObjectId

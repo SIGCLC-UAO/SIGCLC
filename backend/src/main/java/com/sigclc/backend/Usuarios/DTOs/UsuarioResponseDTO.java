@@ -1,4 +1,4 @@
-package com.sigclc.backend.Usuarios;
+package com.sigclc.backend.Usuarios.DTOs;
 
 import java.util.List;
 import lombok.AllArgsConstructor;

@@ -1,10 +1,14 @@
-package com.sigclc.backend.Usuarios;
+package com.sigclc.backend.Usuarios.Repository;
 
 import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
+
+import com.sigclc.backend.Usuarios.DTOs.TopLibroVotosDTO;
+import com.sigclc.backend.Usuarios.DTOs.UsuarioPropuestaDTO;
+import com.sigclc.backend.Usuarios.Models.UsuariosModel;
 
 
 public interface IUsuariosRepository extends MongoRepository<UsuariosModel, ObjectId> {
