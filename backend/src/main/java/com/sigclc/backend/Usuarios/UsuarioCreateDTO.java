@@ -15,5 +15,4 @@ public class UsuarioCreateDTO {
     private Long telefono;    // bsonType: "long"
     private Long edad;        // bsonType: "long" (4..99)
     private String ocupacion;
-    private String newField;  // mapea "New Field" (opcional)
 }

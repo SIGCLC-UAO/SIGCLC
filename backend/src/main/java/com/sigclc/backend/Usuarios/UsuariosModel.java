@@ -42,7 +42,7 @@ public class UsuariosModel {
     @AllArgsConstructor
     public static class LibroPropuesto {
         private String estado;               // "Seleccionado" | "No Seleccionado" | "En Votacion"
-        private String libroId;              
+        private ObjectId libroId;           
         private List<Votacion> votaciones = new ArrayList<>();
     }
 
