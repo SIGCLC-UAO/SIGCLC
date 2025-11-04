@@ -7,31 +7,25 @@ import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
-import com.sigclc.backend.Usuarios.DTOs.TopLibroVotosDTO;
 import com.sigclc.backend.Usuarios.DTOs.PropuestaCreateDTO;
+import com.sigclc.backend.Usuarios.DTOs.TopLibroVotosDTO;
 import com.sigclc.backend.Usuarios.Models.UsuariosModel;
 
 public interface IUsuariosRepository extends MongoRepository<UsuariosModel, ObjectId> {
 
-    /* =======================
-     *  Validaciones básicas
-     * ======================= */
+    // Unicidad básicas
     boolean existsByEmail(String email);
     boolean existsByTelefono(Long telefono);
 
-    /** ¿El usuario ya tiene una propuesta para ese libro? */
+    // ¿El usuario ya tiene propuesta para ese libro?
     @Query(value = "{ '_id': ?0, 'libroPropuesto': { $elemMatch: { 'libroId': ?1 } } }", exists = true)
     boolean existsPropuesta(ObjectId usuarioId, ObjectId libroId);
 
-    /** ¿Existe propuesta en estado 'En Votacion' para ese libro? (evitar duplicados abiertos) */
-    @Query(value = "{ '_id': ?0, 'libroPropuesto': { $elemMatch: { 'libroId': ?1, 'estado': 'En Votacion' } } }", exists = true)
-    boolean existsPropuestaEnVotacion(ObjectId usuarioId, ObjectId libroId);
+    // Buscar todos los usuarios que contengan votos del usuario indicado
+    @Query(value = "{ 'libroPropuesto.votaciones.usuarioId': ?0 }")
+    List<UsuariosModel> findAllConVotoDeUsuario(ObjectId usuarioId);
 
-    /* =======================
-     *  Agregaciones
-     * ======================= */
-
-    /** Top global: libro con más votos "Si" (y métricas). Devuelve 0..1 resultado. */
+    // Agregación: Top global por votos "Si"
     @Aggregation(pipeline = {
         "{ $unwind: '$libroPropuesto' }",
         "{ $addFields: { " +
@@ -46,16 +40,14 @@ public interface IUsuariosRepository extends MongoRepository<UsuariosModel, Obje
         "{ $lookup: { from: 'Libros', localField: '_id', foreignField: '_id', as: 'libro' } }",
         "{ $unwind: { path: '$libro', preserveNullAndEmptyArrays: true } }",
         "{ $project: { _id: 0, " +
-            "libroId: { $toString: '$_id' }, " +
-            "titulo: '$libro.titulo', " +
-            "autor: '$libro.autor', " +
+            "libroId: { $toString: '$_id' }, titulo: '$libro.titulo', autor: '$libro.autor', " +
             "votosSi: 1, votosNo: 1, totalVotos: 1 } }",
         "{ $sort: { votosSi: -1, totalVotos: -1 } }",
         "{ $limit: 1 }"
     })
     List<TopLibroVotosDTO> topLibroMasVotado();
 
-    /** Propuestas de un usuario (con conteos de votos). */
+    // Agregación: propuestas de un usuario con métricas
     @Aggregation(pipeline = {
         "{ $match: { _id: ?0 } }",
         "{ $unwind: { path: '$libroPropuesto', preserveNullAndEmptyArrays: false } }",
@@ -68,9 +60,7 @@ public interface IUsuariosRepository extends MongoRepository<UsuariosModel, Obje
             "nombreUsuario: { $concat: [ { $ifNull: ['$nombre',''] }, ' ', { $ifNull: ['$apellido',''] } ] }, " +
             "libroId: { $toString: '$libroPropuesto.libroId' }, " +
             "estado: '$libroPropuesto.estado', " +
-            "votosSi: '$libroPropuesto.votosSi', " +
-            "votosNo: '$libroPropuesto.votosNo', " +
-            "totalVotos: '$libroPropuesto.totalVotos' } }",
+            "votosSi: '$libroPropuesto.votosSi', votosNo: '$libroPropuesto.votosNo', totalVotos: '$libroPropuesto.totalVotos' } }",
         "{ $sort: { estado: 1 } }"
     })
     List<PropuestaCreateDTO> propuestasDetalladasDeUsuario(ObjectId usuarioId);

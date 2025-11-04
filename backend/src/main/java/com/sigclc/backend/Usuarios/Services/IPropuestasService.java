@@ -4,21 +4,18 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 
-import com.sigclc.backend.Usuarios.DTOs.PropuestaCreate;
+import com.sigclc.backend.Usuarios.DTOs.PropuestaCreateDTO;
+import com.sigclc.backend.Usuarios.DTOs.PropuestaCreateResponseDTO;
+import com.sigclc.backend.Usuarios.DTOs.PropuestaEstadoUpdateDTO;
 import com.sigclc.backend.Usuarios.DTOs.UsuarioResponseDTO;
 
 public interface IPropuestasService {
 
-    // Agrega una propuesta (por defecto la dejamos "En Votacion" si viene null)
-    UsuarioResponseDTO agregarPropuesta(ObjectId usuarioId, ObjectId libroId, String estado);
+    UsuarioResponseDTO agregarPropuesta(ObjectId usuarioId, PropuestaCreateDTO body);
 
-    // Cambia el estado de una propuesta existente
-    UsuarioResponseDTO cambiarEstadoPropuesta(ObjectId usuarioId, ObjectId libroId, String nuevoEstado);
+    UsuarioResponseDTO cambiarEstadoPropuesta(ObjectId usuarioId, String libroIdHex, PropuestaEstadoUpdateDTO body);
 
-    // Elimina una propuesta del array
-    UsuarioResponseDTO eliminarPropuesta(ObjectId usuarioId, ObjectId libroId);
+    UsuarioResponseDTO eliminarPropuesta(ObjectId usuarioId, String libroIdHex);
 
-    // Devuelve propuestas del usuario con métricas locales (votosSi/No/Total).
-    // Si una propuesta está "En Votacion", no devuelve las métricas (quedan null).
-    List<PropuestaCreate> propuestasDetalladasDeUsuario(ObjectId usuarioId);
+    List<PropuestaCreateResponseDTO> listarPropuestasDeUsuario(ObjectId usuarioId);
 }

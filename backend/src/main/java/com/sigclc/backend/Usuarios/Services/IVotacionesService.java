@@ -5,37 +5,16 @@ import java.util.List;
 import org.bson.types.ObjectId;
 
 import com.sigclc.backend.Usuarios.DTOs.UsuarioResponseDTO;
+import com.sigclc.backend.Usuarios.DTOs.VotoCreateDTO;
+import com.sigclc.backend.Usuarios.DTOs.VotoUpdateDTO;
 
 public interface IVotacionesService {
 
-    // Agregar un voto a la propuesta (de un usuario) sobre un libro
-    UsuarioResponseDTO agregarVoto(
-        ObjectId usuarioIdPropuesta,   // usuario dueño de la propuesta
-        ObjectId libroId,              // libro propuesto
-        ObjectId votanteId,            // usuario que vota
-        String   voto,                 // "Si" | "No"
-        String   fechaVoto             // ISO-8601 sugerido; tu modelo usa String
-    );
+    UsuarioResponseDTO agregarVoto(ObjectId usuarioIdPropuesta, String libroIdHex, VotoCreateDTO body);
 
-    // Actualizar el voto de un votante en esa propuesta
-    UsuarioResponseDTO actualizarVoto(
-        ObjectId usuarioIdPropuesta,
-        ObjectId libroId,
-        ObjectId votanteId,
-        String   nuevoVoto,
-        String   nuevaFechaVoto
-    );
+    UsuarioResponseDTO actualizarVoto(ObjectId usuarioIdPropuesta, String libroIdHex, String votanteIdHex, VotoUpdateDTO body);
 
-    // Eliminar el voto de un votante en esa propuesta
-    UsuarioResponseDTO eliminarVoto(
-        ObjectId usuarioIdPropuesta,
-        ObjectId libroId,
-        ObjectId votanteId
-    );
+    UsuarioResponseDTO eliminarVoto(ObjectId usuarioIdPropuesta, String libroIdHex, String votanteIdHex);
 
-    // Listar votos de una propuesta (si la propuesta está "En Votacion" puedes decidir ocultarlos en controlador)
-    List<UsuarioResponseDTO.VotacionDTO> listarVotosDePropuesta(
-        ObjectId usuarioIdPropuesta,
-        ObjectId libroId
-    );
+    List<UsuarioResponseDTO.VotacionDTO> listarVotosDePropuesta(ObjectId usuarioIdPropuesta, String libroIdHex);
 }
