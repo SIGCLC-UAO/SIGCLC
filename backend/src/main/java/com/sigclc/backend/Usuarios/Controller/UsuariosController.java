@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.sigclc.backend.Usuarios.DTOs.UsuarioCreateDTO;
-import com.sigclc.backend.Usuarios.DTOs.UsuarioPropuestaDTO;
+import com.sigclc.backend.Usuarios.DTOs.PropuestaCreate;
 import com.sigclc.backend.Usuarios.DTOs.UsuarioResponseDTO;
 import com.sigclc.backend.Usuarios.DTOs.UsuarioUpdateDTO;
 import com.sigclc.backend.Usuarios.Models.UsuariosModel;
@@ -103,7 +103,7 @@ public class UsuariosController {
 
     /** Listar propuestas del usuario con métricas locales (oculta métricas si estado = “En Votacion”) */
     @GetMapping("/{usuarioId}/propuestas/detalle")
-    public ResponseEntity<List<UsuarioPropuestaDTO>> propuestasDetalladas(
+    public ResponseEntity<List<PropuestaCreate>> propuestasDetalladas(
             @PathVariable String usuarioId) {
         return new ResponseEntity<>(
                 propuestasService.propuestasDetalladasDeUsuario(new ObjectId(usuarioId)),

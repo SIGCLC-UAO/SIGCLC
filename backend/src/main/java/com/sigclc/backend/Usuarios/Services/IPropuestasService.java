@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 
-import com.sigclc.backend.Usuarios.DTOs.UsuarioPropuestaDTO;
+import com.sigclc.backend.Usuarios.DTOs.PropuestaCreate;
 import com.sigclc.backend.Usuarios.DTOs.UsuarioResponseDTO;
 
 public interface IPropuestasService {
@@ -20,5 +20,5 @@ public interface IPropuestasService {
 
     // Devuelve propuestas del usuario con métricas locales (votosSi/No/Total).
     // Si una propuesta está "En Votacion", no devuelve las métricas (quedan null).
-    List<UsuarioPropuestaDTO> propuestasDetalladasDeUsuario(ObjectId usuarioId);
+    List<PropuestaCreate> propuestasDetalladasDeUsuario(ObjectId usuarioId);
 }

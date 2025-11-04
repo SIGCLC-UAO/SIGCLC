@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.sigclc.backend.Usuarios.DTOs.TopLibroVotosDTO;
-import com.sigclc.backend.Usuarios.DTOs.UsuarioPropuestaDTO;
+import com.sigclc.backend.Usuarios.DTOs.PropuestaCreate;
 import com.sigclc.backend.Usuarios.Models.UsuariosModel;
 
 
@@ -64,5 +64,5 @@ public interface IUsuariosRepository extends MongoRepository<UsuariosModel, Obje
             "totalVotos: '$libroPropuesto.totalVotos' } }",
         "{ $sort: { estado: 1 } }"
     })
-    List<UsuarioPropuestaDTO> propuestasDetalladasDeUsuario(ObjectId usuarioId);
+    List<PropuestaCreate> propuestasDetalladasDeUsuario(ObjectId usuarioId);
 }

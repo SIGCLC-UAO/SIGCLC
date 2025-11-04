@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.sigclc.backend.Usuarios.Exception.RecursoNoEncontradoException;
 import com.sigclc.backend.Usuarios.Mapper;
-import com.sigclc.backend.Usuarios.DTOs.UsuarioPropuestaDTO;
+import com.sigclc.backend.Usuarios.DTOs.PropuestaCreate;
 import com.sigclc.backend.Usuarios.DTOs.UsuarioResponseDTO;
 import com.sigclc.backend.Usuarios.Models.UsuariosModel;
 import com.sigclc.backend.Usuarios.Repository.IUsuariosRepository;
@@ -82,10 +82,10 @@ public class PropuestasServiceImp implements IPropuestasService {
     }
 
     @Override
-    public List<UsuarioPropuestaDTO> propuestasDetalladasDeUsuario(ObjectId usuarioId) {
+    public List<PropuestaCreate> propuestasDetalladasDeUsuario(ObjectId usuarioId) {
         UsuariosModel usuario = usuariosService.buscarUsuarioPorId(usuarioId);
 
-        List<UsuarioPropuestaDTO> salida = new ArrayList<>();
+        List<PropuestaCreate> salida = new ArrayList<>();
         if (usuario.getLibroPropuesto() == null || usuario.getLibroPropuesto().isEmpty()) {
             return salida;
         }
@@ -94,7 +94,7 @@ public class PropuestasServiceImp implements IPropuestasService {
                                (usuario.getApellido() != null ? " " + usuario.getApellido() : "");
 
         for (UsuariosModel.LibroPropuesto lp : usuario.getLibroPropuesto()) {
-            UsuarioPropuestaDTO dto = new UsuarioPropuestaDTO();
+            PropuestaCreate dto = new PropuestaCreate();
             dto.setNombreUsuario(nombreUsuario.trim());
             dto.setLibroId(lp.getLibroId() != null ? lp.getLibroId().toHexString() : null);
             dto.setEstado(lp.getEstado());

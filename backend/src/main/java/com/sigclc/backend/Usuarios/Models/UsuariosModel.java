@@ -10,8 +10,6 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.*; // NotNull, NotBlank, Min, Max, Pattern
 
 import lombok.AllArgsConstructor;
