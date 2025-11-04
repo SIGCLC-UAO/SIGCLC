@@ -1,5 +1,6 @@
 package com.sigclc.backend.Usuarios.Services;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class VotacionesServiceImp implements IVotacionesService {
             ObjectId usuarioIdPropuesta,
             ObjectId libroId,
             ObjectId votanteId,
-            String voto,
+            Date voto,
             String fechaVoto) {
 
         UsuariosModel usuario = usuariosService.buscarUsuarioPorId(usuarioIdPropuesta);
