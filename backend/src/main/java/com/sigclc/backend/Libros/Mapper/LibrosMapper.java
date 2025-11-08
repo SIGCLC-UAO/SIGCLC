@@ -28,7 +28,7 @@ public class LibrosMapper {
 
 
         return model;
-
+ 
     }
 
 
@@ -48,6 +48,20 @@ public class LibrosMapper {
         dto.setGenero(model.getGenero());
 
         return dto;
+    }
+
+
+    public void actualizarDTO(LibrosCreateDTO dto, LibrosModel model){
+        if (dto == null || model == null) return;
+
+        model.setTitulo(dto.getTitulo());
+        model.setAutor(dto.getAutor());
+        model.setAnioPublicacion(dto.getAnioPublicacion());
+        model.setEstado(dto.getEstado());
+        model.setSinopsis(dto.getSinopsis());
+        model.setPortada(dto.getPortada());
+        model.setGenero(dto.getGenero());
+        model.setFechaSeleccion(dto.getFechaSeleccion()); 
     }
 
     public List<LibrosResponseDTO> toResponseDTOList(List<LibrosModel> models){

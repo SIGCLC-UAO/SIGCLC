@@ -27,7 +27,8 @@ import com.sigclc.backend.Libros.DTOs.LibrosResponseDTO;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import com.sigclc.backend.Libros.Models.LibrosModel;
+import org.springframework.web.bind.annotation.PutMapping;
+
 
 
 
@@ -53,8 +54,8 @@ public class LibrosController {
     }
     
     @GetMapping("/libroporId/{id}")
-    public ResponseEntity<LibrosModel>buscarLibroPorId(@PathVariable ObjectId id){
-        return new ResponseEntity<LibrosModel>(librosService.buscarLibroPorId(id),HttpStatus.OK);
+    public ResponseEntity<LibrosResponseDTO>buscarLibroPorId(@PathVariable String id){
+        return new ResponseEntity<LibrosResponseDTO>(librosService.buscarLibroPorId(id),HttpStatus.OK);
     }
 
     @GetMapping("/buscar/titulo/{titulo}")
@@ -80,5 +81,10 @@ public class LibrosController {
     @GetMapping("/buscar/genero/{genero}")
     public  ResponseEntity<List<LibrosResponseDTO>> buscarPorGenero(@PathVariable String genero){
         return new ResponseEntity<List<LibrosResponseDTO>>(librosService.buscarPorGenero(genero),HttpStatus.OK);
+    }
+
+    @PutMapping("/actualizar/{id}")
+    public ResponseEntity<LibrosResponseDTO>actualizarLibro(@PathVariable String id, @RequestBody LibrosCreateDTO dto){
+        return new ResponseEntity<LibrosResponseDTO>(librosService.actualizarLibro(id, dto),HttpStatus.OK);
     }
 }
