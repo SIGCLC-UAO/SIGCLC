@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.sigclc.backend.Libros.DTOs.LibrosCreateDTO;
 import com.sigclc.backend.Libros.DTOs.LibrosResponseDTO;
+import com.sigclc.backend.Libros.DTOs.LibrosUpdateDTO;
 import com.sigclc.backend.Libros.Mapper.LibrosMapper;
 import com.sigclc.backend.Libros.Models.LibrosModel;
 import com.sigclc.backend.Libros.Repository.ILibrosRepository;
@@ -91,7 +92,7 @@ public class LibrosServiceImp implements ILibrosService{
 
      
     @Override
-    public LibrosResponseDTO actualizarLibro(String idLibro, LibrosCreateDTO dto){
+    public LibrosResponseDTO actualizarLibro(String idLibro, LibrosUpdateDTO dto){
         if (idLibro == null){
             throw new IllegalArgumentException("El id no puede ser nulo");
         }
@@ -108,7 +109,7 @@ public class LibrosServiceImp implements ILibrosService{
             "El libro con id "+idLibro+" no se ha encontrado o está mal escrito"
         ));
 
-        librosMapper.actualizarDTO(dto, libroExistente);
+        librosMapper.UpdateDTO(dto, libroExistente);
 
         LibrosModel actualizado = librosRepository.save(libroExistente);
 

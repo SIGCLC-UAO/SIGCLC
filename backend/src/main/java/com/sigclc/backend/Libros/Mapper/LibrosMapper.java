@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.sigclc.backend.Libros.DTOs.LibrosCreateDTO;
 import com.sigclc.backend.Libros.DTOs.LibrosResponseDTO;
+import com.sigclc.backend.Libros.DTOs.LibrosUpdateDTO;
 import com.sigclc.backend.Libros.Models.LibrosModel;
 
 @Component
@@ -51,21 +52,21 @@ public class LibrosMapper {
     }
 
 
-    public void actualizarDTO(LibrosCreateDTO dto, LibrosModel model){
+
+    public void UpdateDTO(LibrosUpdateDTO dto, LibrosModel model) {
         if (dto == null || model == null) return;
 
-        model.setTitulo(dto.getTitulo());
-        model.setAutor(dto.getAutor());
-        model.setAnioPublicacion(dto.getAnioPublicacion());
-        model.setEstado(dto.getEstado());
-        model.setSinopsis(dto.getSinopsis());
-        model.setPortada(dto.getPortada());
-        model.setGenero(dto.getGenero());
-        model.setFechaSeleccion(dto.getFechaSeleccion()); 
+        if (dto.getTitulo() != null) model.setTitulo(dto.getTitulo());
+        if (dto.getAutor() != null) model.setAutor(dto.getAutor());
+        if (dto.getAnioPublicacion() != null) model.setAnioPublicacion(dto.getAnioPublicacion());
+        if (dto.getEstado() != null) model.setEstado(dto.getEstado());
+        if (dto.getSinopsis() != null) model.setSinopsis(dto.getSinopsis());
+        if (dto.getPortada() != null) model.setPortada(dto.getPortada());
+        if (dto.getGenero() != null) model.setGenero(dto.getGenero());
+        if (dto.getFechaSeleccion() != null) model.setFechaSeleccion(dto.getFechaSeleccion());
     }
 
-    public List<LibrosResponseDTO> toResponseDTOList(List<LibrosModel> models){
-        return models.stream()
-        .map(this::toResponseDTO).toList();
+    public List<LibrosResponseDTO> toResponseDTOList(List<LibrosModel> libros) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

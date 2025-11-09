@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.sigclc.backend.Libros.DTOs.LibrosCreateDTO;
 import com.sigclc.backend.Libros.DTOs.LibrosResponseDTO;
+import com.sigclc.backend.Libros.DTOs.LibrosUpdateDTO;
 
 
 public interface  ILibrosService {
@@ -16,6 +17,6 @@ public interface  ILibrosService {
     public List<LibrosResponseDTO> buscarPorAnioPublicacion(Long anioPublicacion);
     public List<LibrosResponseDTO> buscarPorFechaSeleccion(Date fechaSeleccion);
     public List<LibrosResponseDTO> buscarPorGenero(String genero);     
-    public  LibrosResponseDTO actualizarLibro(String id, LibrosCreateDTO dto);
+    public  LibrosResponseDTO actualizarLibro(String id, LibrosUpdateDTO  dto);
 }
 
