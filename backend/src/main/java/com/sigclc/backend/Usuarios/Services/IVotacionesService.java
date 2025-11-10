@@ -10,11 +10,27 @@ import com.sigclc.backend.Usuarios.DTOs.VotoUpdateDTO;
 
 public interface IVotacionesService {
 
-    UsuarioResponseDTO agregarVoto(ObjectId usuarioIdPropuesta, String libroIdHex, VotoCreateDTO body);
+    // Agregar un voto a una propuesta de libro
+    UsuarioResponseDTO agregarVoto(
+            ObjectId usuarioIdPropuesta,
+            String libroIdHex,
+            VotoCreateDTO body);
 
-    UsuarioResponseDTO actualizarVoto(ObjectId usuarioIdPropuesta, String libroIdHex, String votanteIdHex, VotoUpdateDTO body);
+    // Actualizar un voto existente
+    UsuarioResponseDTO actualizarVoto(
+            ObjectId usuarioIdPropuesta,
+            String libroIdHex,
+            String votanteIdHex,
+            VotoUpdateDTO body);
 
-    UsuarioResponseDTO eliminarVoto(ObjectId usuarioIdPropuesta, String libroIdHex, String votanteIdHex);
+    // Eliminar un voto
+    UsuarioResponseDTO eliminarVoto(
+            ObjectId usuarioIdPropuesta,
+            String libroIdHex,
+            String votanteIdHex);
 
-    List<UsuarioResponseDTO.VotacionDTO> listarVotosDePropuesta(ObjectId usuarioIdPropuesta, String libroIdHex);
+    // Listar todos los votos de una propuesta
+    List<UsuarioResponseDTO.VotacionDTO> listarVotosDePropuesta(
+            ObjectId usuarioIdPropuesta,
+            String libroIdHex);
 }
