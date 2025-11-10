@@ -1,6 +1,8 @@
 package com.sigclc.backend.Usuarios.Controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +48,7 @@ public class UsuariosController {
      * HTTP: GET
      * URL: /api/usuarios
      */
-    @GetMapping
+    @GetMapping("/listar")
     public ResponseEntity<List<UsuarioResponseDTO>> listarUsuarios() {
         List<UsuarioResponseDTO> lista = usuariosService.listarUsuarios();
         return ResponseEntity.ok(lista);
@@ -87,13 +89,17 @@ public class UsuariosController {
      * HTTP: DELETE
      * URL: /api/usuarios/{id}
      */
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarUsuario(@PathVariable("id") String idHex) {
+        @DeleteMapping("/{id}")
+        public ResponseEntity<Map<String, String>> eliminarUsuario(@PathVariable("id") String idHex) {
 
         ObjectId id = parseObjectIdOrBadRequest(idHex, "id de usuario inválido.");
         usuariosService.eliminarUsuario(id);
-        return ResponseEntity.noContent().build();
-    }
+
+        Map<String, String> body = new HashMap<>();
+        body.put("mensaje", "Usuario eliminado correctamente.");
+
+        return ResponseEntity.ok(body); // 200 OK con JSON
+        }
 
     /* ==== Helper privado ==== */
     private ObjectId parseObjectIdOrBadRequest(String hex, String msg) {
