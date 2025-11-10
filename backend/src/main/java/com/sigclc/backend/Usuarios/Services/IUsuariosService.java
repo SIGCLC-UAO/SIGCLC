@@ -11,13 +11,15 @@ import com.sigclc.backend.Usuarios.Models.UsuariosModel;
 
 public interface IUsuariosService {
 
-    UsuarioResponseDTO crearUsuario(UsuarioCreateDTO dto);
+    // Crear usuario
+    UsuarioResponseDTO crearUsuario(UsuarioCreateDTO usuario);
 
+    // Listar usuarios (simple)
     List<UsuarioResponseDTO> listarUsuarios();
 
+    // Buscar detalle (devuelve Model para reutilizar internamente)
     UsuariosModel buscarUsuarioPorId(ObjectId id);
 
+    // Actualizar parcial (PATCH)
     UsuarioResponseDTO actualizarUsuarioParcial(ObjectId id, UsuarioUpdateDTO dto);
-
-    void eliminarUsuario(ObjectId id);
 }
