@@ -11,14 +11,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 
 
-public class LibrosCreateDTO{
+public class LibrosUpdateDTO {
 
     @NotBlank(message="El titulo es obligatorio")
     private String titulo;
@@ -27,12 +25,11 @@ public class LibrosCreateDTO{
     @NotNull(message="El año de publicacion es obligatorio")
     private Long anioPublicacion;
     @NotNull(message="El estado de lectura es obligatorio")
-    private EstadoLibro estado; //pendiente, en lectura, leido
-    private Date fechaSeleccion; //opcional
+    private EstadoLibro estado; // pendiente, en lectura, leído
+    private Date fechaSeleccion;
     @NotBlank(message="La sinopsis es obligatoria")
     private String sinopsis;
-    private String portada; //opcional
+    private String portada;
     @NotBlank(message="El genero es obligatorio")
-    private String genero; 
-}  
-
+    private String genero;
+}

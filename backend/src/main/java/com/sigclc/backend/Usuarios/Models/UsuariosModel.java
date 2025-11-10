@@ -37,6 +37,7 @@ public class UsuariosModel {
         return id != null ? id.toHexString() : null;
     }
 
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor

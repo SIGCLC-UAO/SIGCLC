@@ -24,4 +24,6 @@ public class LibrosResponseDTO {
     private String sinopsis;
     private String portada;
     private String genero;
+
+    
 }
