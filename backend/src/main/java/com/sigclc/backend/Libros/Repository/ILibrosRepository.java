@@ -39,5 +39,3 @@ public interface  ILibrosRepository extends  MongoRepository<LibrosModel, Object
     List<LibrosModel> buscarPorGenero(String genero); 
 }
 
-
-

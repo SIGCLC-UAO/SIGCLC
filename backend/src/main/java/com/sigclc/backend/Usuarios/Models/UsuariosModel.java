@@ -62,7 +62,7 @@ public class UsuariosModel {
         return id != null ? id.toHexString() : null;
     }
 
-    // ================== Subdocumento: LibroPropuesto ==================
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
