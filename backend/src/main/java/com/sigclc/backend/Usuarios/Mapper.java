@@ -1,8 +1,9 @@
 package com.sigclc.backend.Usuarios;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import org.springframework.stereotype.Component;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import com.sigclc.backend.Usuarios.DTOs.UsuarioCreateDTO;
 import com.sigclc.backend.Usuarios.DTOs.UsuarioResponseDTO;
@@ -10,6 +11,9 @@ import com.sigclc.backend.Usuarios.DTOs.UsuarioUpdateDTO;
 import com.sigclc.backend.Usuarios.Models.UsuariosModel;
 import com.sigclc.backend.Usuarios.Models.UsuariosModel.LibroPropuesto;
 import com.sigclc.backend.Usuarios.Models.UsuariosModel.Votacion;
+
+import org.bson.types.ObjectId;
+import org.springframework.stereotype.Component;
 
 @Component
 public class Mapper {
@@ -21,15 +25,14 @@ public class Mapper {
         if (dto == null) return null;
 
         UsuariosModel model = new UsuariosModel();
-        // _id lo genera MongoDB
         model.setNombre(dto.getNombre());
         model.setApellido(dto.getApellido());
         model.setEmail(dto.getEmail());
         model.setRol(dto.getRol());
-        model.setTelefono(dto.getTelefono()); // Long
-        model.setEdad(dto.getEdad());         // Long
+        model.setTelefono(dto.getTelefono());
+        model.setEdad(dto.getEdad());
         model.setOcupacion(dto.getOcupacion());
-        // listas embebidas se inicializan en el constructor del model (o aquí si lo prefieres)
+        model.setLibroPropuesto(new ArrayList<>());
         return model;
     }
 
@@ -40,7 +43,7 @@ public class Mapper {
         if (model == null) return null;
 
         UsuarioResponseDTO dto = new UsuarioResponseDTO();
-        dto.setId(model.getIdAsString());
+        dto.setId(model.getId() != null ? model.getId().toHexString() : null);
         dto.setNombre(model.getNombre());
         dto.setApellido(model.getApellido());
         dto.setEmail(model.getEmail());
@@ -49,26 +52,27 @@ public class Mapper {
         dto.setEdad(model.getEdad());
         dto.setOcupacion(model.getOcupacion());
 
-        // Propuestas embebidas
-        dto.setLibroPropuesto(
-        model.getLibroPropuesto()
-        .stream()
-        .map(this::toLibroPropuestoDTO) 
-        .toList()
-        );
+        List<LibroPropuesto> propuestas = model.getLibroPropuesto();
+        if (propuestas != null && !propuestas.isEmpty()) {
+            dto.setLibroPropuesto(
+                propuestas.stream()
+                         .filter(Objects::nonNull)
+                         .map(this::toLibroPropuestoDTO)
+                         .collect(Collectors.toList())
+            );
+        } else {
+            dto.setLibroPropuesto(List.of());
+        }
+
         return dto;
     }
 
-        
-
-    /* ==========================================
-     *  List<Model>  ->  List<ResponseDTO>
-     * ========================================== */
     public List<UsuarioResponseDTO> toResponseDTOList(List<UsuariosModel> models) {
-        return models == null ? List.of()
-                              : models.stream()
-                              .map(this::toResponseDTO)
-                              .toList();
+        if (models == null || models.isEmpty()) return List.of();
+        return models.stream()
+                     .filter(Objects::nonNull)
+                     .map(this::toResponseDTO)
+                     .collect(Collectors.toList());
     }
 
     /* =========================
@@ -79,12 +83,10 @@ public class Mapper {
 
         if (dto.getNombre()    != null) model.setNombre(dto.getNombre());
         if (dto.getApellido()  != null) model.setApellido(dto.getApellido());
-        if (dto.getEmail()     != null) model.setEmail(dto.getEmail());
-        if (dto.getRol()       != null) model.setRol(dto.getRol());
         if (dto.getTelefono()  != null) model.setTelefono(dto.getTelefono());
         if (dto.getEdad()      != null) model.setEdad(dto.getEdad());
         if (dto.getOcupacion() != null) model.setOcupacion(dto.getOcupacion());
-        // Las propuestas y votaciones se gestionan por métodos específicos del Service.
+        // Email/rol fuera de PATCH por política actual.
     }
 
     /* =========================
@@ -97,13 +99,16 @@ public class Mapper {
         dto.setEstado(lp.getEstado());
         dto.setLibroId(lp.getLibroId() != null ? lp.getLibroId().toHexString() : null);
 
-        if (lp.getVotaciones() != null) {
+        List<Votacion> votos = lp.getVotaciones();
+        if (votos != null && !votos.isEmpty()) {
             dto.setVotaciones(
-                lp.getVotaciones()
-                  .stream()
-                  .map(this::toVotacionDTO)
-                  .toList()
+                votos.stream()
+                     .filter(Objects::nonNull)
+                     .map(this::toVotacionDTO)
+                     .collect(Collectors.toList())
             );
+        } else {
+            dto.setVotaciones(List.of());
         }
         return dto;
     }
@@ -112,9 +117,18 @@ public class Mapper {
         if (v == null) return null;
 
         UsuarioResponseDTO.VotacionDTO dto = new UsuarioResponseDTO.VotacionDTO();
-        dto.setVoto(v.getVoto());                // "Si" | "No" (String en el Model)
-        dto.setFechaVoto(v.getFechaVoto());      // Date en el Model (si lo dejaste como Date)
+        dto.setVoto(v.getVoto());
+        dto.setFechaVoto(v.getFechaVoto());
         dto.setUsuarioId(v.getUsuarioId() != null ? v.getUsuarioId().toHexString() : null);
         return dto;
+    }
+
+    /** Utilidad opcional: convierte String a ObjectId o retorna null (útil en Services). */
+    public ObjectId toObjectIdOrNull(String hex) {
+        try {
+            return (hex == null || hex.isBlank()) ? null : new ObjectId(hex);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
 }
