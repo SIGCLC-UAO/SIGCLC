@@ -35,4 +35,3 @@ public class LibrosCreateDTO{
     @NotBlank(message="El genero es obligatorio")
     private String genero; 
 }  
-

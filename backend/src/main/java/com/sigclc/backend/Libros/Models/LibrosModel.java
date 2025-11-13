@@ -34,7 +34,7 @@ public class LibrosModel {
     private String sinopsis;
     private String portada;
     private String genero;
-
+ 
 
     @JsonProperty("id")
     public String getIdAsString(){
@@ -43,5 +43,4 @@ public class LibrosModel {
 
 
 }
-
 

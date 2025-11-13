@@ -17,6 +17,6 @@ public interface  ILibrosService {
     public List<LibrosResponseDTO> buscarPorAnioPublicacion(Long anioPublicacion);
     public List<LibrosResponseDTO> buscarPorFechaSeleccion(Date fechaSeleccion);
     public List<LibrosResponseDTO> buscarPorGenero(String genero);     
-    public  LibrosResponseDTO actualizarLibro(String id, LibrosUpdateDTO  dto);
+    public LibrosResponseDTO actualizarLibro(String id, LibrosUpdateDTO  dto);
+    public void eliminarLibroPorId(String id);
 }
-

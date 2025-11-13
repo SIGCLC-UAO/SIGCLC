@@ -23,12 +23,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import com.sigclc.backend.Libros.DTOs.LibrosCreateDTO;
 import com.sigclc.backend.Libros.DTOs.LibrosResponseDTO;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import org.springframework.web.bind.annotation.PutMapping;
 
 import com.sigclc.backend.Libros.DTOs.LibrosUpdateDTO;
+
+
 
 
 
@@ -84,8 +87,15 @@ public class LibrosController {
         return new ResponseEntity<List<LibrosResponseDTO>>(librosService.buscarPorGenero(genero),HttpStatus.OK);
     }
 
-    @PutMapping("/actualizar/{id}")
+    @PutMapping("/actualizarPorId/{id}")
     public ResponseEntity<LibrosResponseDTO>actualizarLibro(@PathVariable String id, @RequestBody LibrosUpdateDTO dto){
         return new ResponseEntity<LibrosResponseDTO>(librosService.actualizarLibro(id, dto),HttpStatus.OK);
     }
+
+    @DeleteMapping("/eliminarPorId/{id}")
+    public ResponseEntity<LibrosResponseDTO>eliminarLibroPorId(@PathVariable String id){
+        librosService.eliminarLibroPorId(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
 }

@@ -116,4 +116,21 @@ public class LibrosServiceImp implements ILibrosService{
         return  librosMapper.toResponseDTO(actualizado);        
     }
 
+    @Override
+    public void eliminarLibroPorId(String idLibro){
+        if (idLibro == null){
+            throw new IllegalArgumentException("El id no puede ser nulo");
+        }
+
+        ObjectId objectId;
+        try {
+            objectId = new ObjectId(idLibro);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("El formato del id no es valido");
+        }
+
+        librosRepository.deleteById(objectId);
+
+    }
+
 }
