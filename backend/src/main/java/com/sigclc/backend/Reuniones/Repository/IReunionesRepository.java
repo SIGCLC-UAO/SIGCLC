@@ -69,4 +69,20 @@ public interface IReunionesRepository extends MongoRepository<ReunionesModel, Ob
             "extensionesAdjuntas: '$archivosAdjuntos' } }"
     })
     List<ReunionResponseDTO> resumenPorModalidadYRango(String modalidad, Date desde, Date hasta);
+
+    // 5) Próximas (fecha >= now), orden cronológico
+    @Aggregation(pipeline = {
+        "{ $match: { fechaHoraInicio: { $gte: ?0 } } }",
+        "{ $lookup: { from: 'Libros', localField: 'libroId', foreignField: '_id', as: 'libro' } }",
+        "{ $unwind: { path: '$libro', preserveNullAndEmptyArrays: true } }",
+        "{ $sort: { fechaHoraInicio: 1 } }",
+        "{ $project: { _id: 0, " +
+            "fechaHoraInicio: { $dateToString: { format: '%Y-%m-%dT%H:%M:%S.%LZ', date: '$fechaHoraInicio' } }, " +
+            "modalidad: 1, " +
+            "libroTitulo: '$libro.titulo', " +
+            "libroAutor:  '$libro.autor', " +
+            "extensionesAdjuntas: '$archivosAdjuntos' } }"
+    })
+    List<ReunionResponseDTO> resumenProximas(Date now);
+    
 }

@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.springframework.stereotype.Component;
 
 import com.sigclc.backend.Reuniones.DTOs.ArchivoMetaSafeResponseDTO;
 import com.sigclc.backend.Reuniones.DTOs.ArchivoUploadResponseDTO;
@@ -19,7 +20,7 @@ import com.sigclc.backend.Reuniones.DTOs.ReunionUpdateDTO;
 import com.sigclc.backend.Reuniones.Models.ReunionArchivoView;
 import com.sigclc.backend.Reuniones.Models.ReunionesModel;
 
-
+@Component
 public class ReunionesMapper {
 
     /* ===========================
@@ -104,6 +105,8 @@ public class ReunionesMapper {
         dto.setExtensionesAdjuntas(extensiones != null ? extensiones : new ArrayList<>());
         return dto;
     }
+
+    /* ====================== utilidades ====================== */
 
     private static boolean notBlank(String s) {
         return s != null && !s.trim().isEmpty();
