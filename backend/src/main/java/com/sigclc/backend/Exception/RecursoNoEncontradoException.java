@@ -1,4 +1,4 @@
-package com.sigclc.backend.Usuarios.Exception;
+package com.sigclc.backend.Exception;
 
 public class RecursoNoEncontradoException extends RuntimeException {
     public RecursoNoEncontradoException(String mensaje) {
