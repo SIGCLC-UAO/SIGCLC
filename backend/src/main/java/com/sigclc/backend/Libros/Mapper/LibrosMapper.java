@@ -2,6 +2,7 @@ package com.sigclc.backend.Libros.Mapper;
 
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
@@ -67,6 +68,10 @@ public class LibrosMapper {
     }
 
     public List<LibrosResponseDTO> toResponseDTOList(List<LibrosModel> libros) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if(libros == null) return null;
+
+        return libros.stream()
+                .map(this::toResponseDTO)
+                .collect(Collectors.toList());
     }
 }
