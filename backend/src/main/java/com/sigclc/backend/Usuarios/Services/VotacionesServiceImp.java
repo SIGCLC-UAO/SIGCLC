@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import com.sigclc.backend.Usuarios.DTOs.UsuarioResponseDTO;
 import com.sigclc.backend.Usuarios.DTOs.VotoCreateDTO;
 import com.sigclc.backend.Usuarios.DTOs.VotoUpdateDTO;
-import com.sigclc.backend.Usuarios.Exception.RecursoNoEncontradoException;
+import com.sigclc.backend.Exception.RecursoNoEncontradoException;
 import com.sigclc.backend.Usuarios.Mapper;
 import com.sigclc.backend.Usuarios.Models.UsuariosModel;
 import com.sigclc.backend.Usuarios.Models.UsuariosModel.LibroPropuesto;

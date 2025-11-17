@@ -6,8 +6,11 @@ import java.util.List;
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,16 +42,35 @@ public class ReunionesController {
     @Autowired
     private IReunionesAsistentes reunionesAsistentes;
 
-    /* ===================== CRUD + EXTENSIONES ===================== */
+    /* =========================================================
+     *     CRUD + EXTENSIONES
+     * ========================================================= */
 
     /**
-     * Crear reunión.
-     * Espera un multipart/form-data con:
-     *  - parte "datos": JSON de ReunionCreateDTO
-     *  - parte "archivos": (opcional) lista de archivos
+     * CREAR REUNIÓN SOLO CON JSON (sin archivos).
+     * Body: application/json con ReunionCreateDTO.
+     *
+     * POST /api/reuniones
      */
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ReunionResponseDTO crearReunion(
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ReunionResponseDTO crearReunionJson(
+            @RequestBody @Valid ReunionCreateDTO createDTO) {
+
+        return reunionesService.crear(createDTO, null);
+    }
+
+    /**
+     * CREAR REUNIÓN CON JSON + ARCHIVOS (multipart/form-data).
+     * - parte "datos": JSON de ReunionCreateDTO
+     * - parte "archivos": (opcional) lista de archivos
+     *
+     * POST /api/reuniones/multipart
+     */
+    @PostMapping(
+            path = "/multipart",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public ReunionResponseDTO crearReunionMultipart(
             @RequestPart("datos") @Valid ReunionCreateDTO createDTO,
             @RequestPart(value = "archivos", required = false) List<MultipartFile> archivosSubidos) {
 
@@ -57,7 +79,9 @@ public class ReunionesController {
 
     /**
      * Actualizar datos de una reunión existente (sin tocar archivos).
-     * Recibe JSON simple.
+     * Recibe JSON application/json.
+     *
+     * PUT /api/reuniones/{reunionId}
      */
     @PutMapping("/{reunionId}")
     public ReunionResponseDTO actualizarReunion(
@@ -69,6 +93,8 @@ public class ReunionesController {
 
     /**
      * Eliminar reunión y todos sus archivos de GridFS.
+     *
+     * DELETE /api/reuniones/{reunionId}
      */
     @DeleteMapping("/{reunionId}")
     public void eliminarReunion(@PathVariable("reunionId") String reunionId) {
@@ -77,7 +103,8 @@ public class ReunionesController {
 
     /**
      * Recalcular las extensiones adjuntas leyendo lo que haya en GridFS.
-     * Útil si por alguna razón se desincronizó.
+     *
+     * PATCH /api/reuniones/{reunionId}/extensiones/resync
      */
     @PatchMapping("/{reunionId}/extensiones/resync")
     public ReunionResponseDTO resincronizarExtensiones(
@@ -86,10 +113,14 @@ public class ReunionesController {
         return reunionesService.resyncExtensiones(reunionId);
     }
 
-    /* ========================== LISTADOS ========================== */
+    /* =========================================================
+     *     LISTADOS
+     * ========================================================= */
 
     /**
      * Listado general de reuniones (resumen).
+     *
+     * GET /api/reuniones/resumen
      */
     @GetMapping("/resumen")
     public List<ReunionResponseDTO> listarResumenTodas() {
@@ -98,6 +129,8 @@ public class ReunionesController {
 
     /**
      * Resumen por id de reunión.
+     *
+     * GET /api/reuniones/resumen/{reunionId}
      */
     @GetMapping("/resumen/{reunionId}")
     public List<ReunionResponseDTO> listarResumenPorId(
@@ -108,6 +141,8 @@ public class ReunionesController {
 
     /**
      * Resumen de reuniones asociadas a un libro.
+     *
+     * GET /api/reuniones/resumen/libro/{libroId}
      */
     @GetMapping("/resumen/libro/{libroId}")
     public List<ReunionResponseDTO> listarResumenPorLibro(
@@ -118,8 +153,8 @@ public class ReunionesController {
 
     /**
      * Resumen por modalidad y rango de fechas.
-     * Ejemplo de llamada:
-     * /api/reuniones/resumen/modalidad?modalidad=presencial&desde=2025-11-10T00:00:00&hasta=2025-11-30T23:59:59
+     *
+     * GET /api/reuniones/resumen/modalidad?modalidad=presencial&desde=...&hasta=...
      */
     @GetMapping("/resumen/modalidad")
     public List<ReunionResponseDTO> listarResumenPorModalidadYRango(
@@ -134,8 +169,9 @@ public class ReunionesController {
 
     /**
      * Próximas reuniones. Si no se envía fecha, usa "ahora".
-     * Ejemplo: /api/reuniones/resumen/proximas
-     *          /api/reuniones/resumen/proximas?referencia=2025-11-15T00:00:00
+     *
+     * GET /api/reuniones/resumen/proximas
+     * GET /api/reuniones/resumen/proximas?referencia=2025-11-15T00:00:00
      */
     @GetMapping("/resumen/proximas")
     public List<ReunionResponseDTO> listarResumenProximas(
@@ -145,10 +181,14 @@ public class ReunionesController {
         return reunionesListados.listarResumenProximas(referenciaTiempo);
     }
 
-    /* ========================== ARCHIVOS ========================== */
+    /* =========================================================
+     *     ARCHIVOS
+     * ========================================================= */
 
     /**
      * Listar metadata de archivos adjuntos de una reunión.
+     *
+     * GET /api/reuniones/{reunionId}/archivos
      */
     @GetMapping("/{reunionId}/archivos")
     public List<ArchivoMetaSafeResponseDTO> listarArchivos(
@@ -160,10 +200,14 @@ public class ReunionesController {
     /**
      * Subir uno o varios archivos a una reunión.
      * multipart/form-data con campo "archivos".
+     *
+     * POST /api/reuniones/{reunionId}/archivos
+     *
+     * (SIN 'consumes' restrictivo para evitar HttpMediaTypeNotSupported con
+     *  application/octet-stream; Spring seguirá esperando multipart debido a
+     *  la presencia de MultipartFile).
      */
-    @PostMapping(
-            path = "/{reunionId}/archivos",
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(path = "/{reunionId}/archivos")
     public ArchivoUploadResponseDTO subirArchivos(
             @PathVariable("reunionId") String reunionId,
             @RequestPart("archivos") List<MultipartFile> archivosSubidos) {
@@ -172,21 +216,60 @@ public class ReunionesController {
     }
 
     /**
-     * Eliminar un archivo de una reunión por nombre de archivo.
+     * Descargar un archivo concreto por nombre.
+     *
+     * GET /api/reuniones/{reunionId}/archivos/{filename}
+     */
+    @GetMapping("/{reunionId}/archivos/{filename}")
+    public ResponseEntity<Resource> descargarArchivo(
+            @PathVariable("reunionId") String reunionId,
+            @PathVariable("filename") String filename) {
+
+        Resource recurso = reunionesArchivos.obtenerRecursoArchivo(reunionId, filename);
+
+        String contentType = "application/octet-stream";
+        String lowerName = filename.toLowerCase();
+        if (lowerName.endsWith(".pdf")) {
+            contentType = "application/pdf";
+        } else if (lowerName.endsWith(".png")) {
+            contentType = "image/png";
+        } else if (lowerName.endsWith(".ppt") || lowerName.endsWith(".pptx")) {
+            contentType = "application/vnd.ms-powerpoint";
+        } else if (lowerName.endsWith(".docx")) {
+            contentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(
+                        HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + filename + "\""
+                )
+                .body(recurso);
+    }
+
+    /**
+     * Eliminar un archivo de una reunión por nombre.
      * Recibe JSON: { "filename": "algo.pdf" }
+     *
+     * DELETE /api/reuniones/{reunionId}/archivos
      */
     @DeleteMapping("/{reunionId}/archivos")
     public ArchivoUploadResponseDTO eliminarArchivo(
             @PathVariable("reunionId") String reunionId,
-            @RequestBody @Valid ArchivoDeleteRequestDTO deleteRequest) {
+            @Valid @RequestBody ArchivoDeleteRequestDTO deleteRequest) {
 
         return reunionesArchivos.eliminarArchivo(reunionId, deleteRequest);
     }
 
-    /* ========================= ASISTENTES ========================= */
+    /* =========================================================
+     *     ASISTENTES
+     * ========================================================= */
 
     /**
      * Inscribir un usuario como asistente.
+     *
+     * POST /api/reuniones/{reunionId}/asistentes/{usuarioId}
      */
     @PostMapping("/{reunionId}/asistentes/{usuarioId}")
     public InscripcionResponseDTO inscribirAsistente(
@@ -198,6 +281,8 @@ public class ReunionesController {
 
     /**
      * Retirar un usuario de la lista de asistentes.
+     *
+     * DELETE /api/reuniones/{reunionId}/asistentes/{usuarioId}
      */
     @DeleteMapping("/{reunionId}/asistentes/{usuarioId}")
     public InscripcionResponseDTO retirarAsistente(

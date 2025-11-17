@@ -1,6 +1,8 @@
 package com.sigclc.backend.Reuniones.Services;
 
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -15,7 +17,6 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -47,39 +48,31 @@ public class ReunionesServiceImp implements IReunionesService {
     @Override
     public ReunionResponseDTO crear(ReunionCreateDTO createDTO,
                                     List<MultipartFile> archivosSubidos) {
-        // 1. Validar DTO de entrada
+
         Objects.requireNonNull(createDTO, "ReunionCreateDTO no puede ser null");
+
         validarCreate(createDTO);
 
-        // 2. Mapear DTO -> entidad
+        // 1. Mapear DTO -> entidad y guardar reunión
         ReunionesModel nuevaReunion = reunionesMapper.toEntityFromCreate(createDTO);
-        if (nuevaReunion == null) {
-            // Esto no debería pasar nunca, pero dejamos el chequeo claro
-            throw new IllegalStateException("Error interno: el mapper devolvió una reunión nula");
+        reunionesRepository.save(nuevaReunion);
+
+        ObjectId reunionId = nuevaReunion.getId();
+
+        // 2. Guardar archivos (si vienen) y actualizar extensiones
+        if (archivosSubidos != null && !archivosSubidos.isEmpty()) {
+            guardarArchivosGridFs(reunionId, archivosSubidos);
+            actualizarExtensionesDesdeGridFs(reunionId);
         }
 
-    // 3. Guardar en Mongo y recuperar la entidad persistida (ya con _id)
-    nuevaReunion = reunionesRepository.save(nuevaReunion);
-
-    // 4. Asegurarnos de que el id existe después de guardar
-    ObjectId reunionId = nuevaReunion.getId();
-    if (reunionId == null) {
-        throw new IllegalStateException("Error interno: la reunión guardada no tiene id");
+        // 3. Devolver el resumen de la reunión recién creada
+        return tomarUnicoOPrimero(reunionesRepository.resumenPorId(reunionId));
     }
-
-    // 5. Si llegaron archivos, subirlos a GridFS y sincronizar extensiones
-    if (archivosSubidos != null && !archivosSubidos.isEmpty()) {
-        guardarArchivosGridFs(reunionId, archivosSubidos);
-        actualizarExtensionesDesdeGridFs(reunionId);
-    }
-
-    // 6. Devolver el resumen de la reunión recién creada
-    return tomarUnicoOPrimero(reunionesRepository.resumenPorId(reunionId));
-}
-
 
     @Override
-    public ReunionResponseDTO actualizar(String reunionIdHex, ReunionUpdateDTO updateDTO) {
+    public ReunionResponseDTO actualizar(String reunionIdHex,
+                                         ReunionUpdateDTO updateDTO) {
+
         Objects.requireNonNull(reunionIdHex, "reunionId no puede ser null");
         Objects.requireNonNull(updateDTO, "ReunionUpdateDTO no puede ser null");
 
@@ -100,16 +93,20 @@ public class ReunionesServiceImp implements IReunionesService {
 
     @Override
     public void eliminar(String reunionIdHex) {
+
         Objects.requireNonNull(reunionIdHex, "reunionId no puede ser null");
         ObjectId reunionObjectId = convertirAObjectId(reunionIdHex);
 
+        // 1. Borrar todos los archivos asociados en GridFS
         borrarTodosArchivosGridFs(reunionObjectId);
-        // reunionObjectId no puede ser null por la validación de convertirAObjectId
+
+        // 2. Borrar la reunión en la colección principal
         reunionesRepository.deleteById(reunionObjectId);
     }
 
     @Override
     public ReunionResponseDTO resyncExtensiones(String reunionIdHex) {
+
         Objects.requireNonNull(reunionIdHex, "reunionId no puede ser null");
         ObjectId reunionObjectId = convertirAObjectId(reunionIdHex);
 
@@ -120,56 +117,79 @@ public class ReunionesServiceImp implements IReunionesService {
     /* ============= Helpers de validación ============= */
 
     private void validarCreate(ReunionCreateDTO dto) {
-        if (estaVacio(dto.getFechaHoraInicio()))
+        if (estaVacio(dto.getFechaHoraInicio())) {
             throw new IllegalArgumentException("fechaHoraInicio es obligatoria (ISO-8601).");
-        if (estaVacio(dto.getModalidad()))
+        }
+        if (estaVacio(dto.getModalidad())) {
             throw new IllegalArgumentException("modalidad es obligatoria.");
-        if (estaVacio(dto.getLibroId()))
+        }
+        if (estaVacio(dto.getLibroId())) {
             throw new IllegalArgumentException("libroId es obligatorio.");
+        }
 
         validarModalidad(dto.getModalidad());
         validarSegunModalidad(dto.getModalidad(), dto.getLugar(), dto.getEnlace());
     }
 
     private void validarModalidad(String modalidad) {
-        String modalidadNormalizada = aMinusculasSeguro(modalidad);
-        if (!("presencial".equals(modalidadNormalizada)
-                || "virtual".equals(modalidadNormalizada))) {
+        String normalizada = aMinusculasSeguro(modalidad);
+        if (!("presencial".equals(normalizada) || "virtual".equals(normalizada))) {
             throw new IllegalArgumentException("Modalidad inválida. Use: presencial | virtual.");
         }
     }
 
-    private void validarSegunModalidad(String modalidad, String lugar, String enlace) {
-        String modalidadNormalizada = aMinusculasSeguro(modalidad);
-        if ("presencial".equals(modalidadNormalizada) && estaVacio(lugar)) {
-            throw new IllegalArgumentException("Para modalidad presencial, 'lugar' es obligatorio.");
+    private void validarSegunModalidad(String modalidad,
+                                       String lugar,
+                                       String enlace) {
+
+        String normalizada = aMinusculasSeguro(modalidad);
+
+        if ("presencial".equals(normalizada) && estaVacio(lugar)) {
+            throw new IllegalArgumentException(
+                    "Para modalidad presencial, 'lugar' es obligatorio.");
         }
-        if ("virtual".equals(modalidadNormalizada) && estaVacio(enlace)) {
-            throw new IllegalArgumentException("Para modalidad virtual, 'enlace' es obligatorio.");
+
+        if ("virtual".equals(normalizada) && estaVacio(enlace)) {
+            throw new IllegalArgumentException(
+                    "Para modalidad virtual, 'enlace' es obligatorio.");
         }
     }
 
-    /* ========== GridFS (guardar/borrar/sync + util) ========== */
+    /* ========== GridFS (guardar / borrar / sync) ========== */
 
-    private void guardarArchivosGridFs(@NonNull ObjectId reunionObjectId,
+    /**
+     * Guarda uno o varios archivos en GridFS para una reunión,
+     * con metadata requerida por el $jsonSchema: reunionId, extension, sha256.
+     */
+    private void guardarArchivosGridFs(ObjectId reunionObjectId,
                                        List<MultipartFile> archivosSubidos) {
-        if (archivosSubidos == null) return;
+
+        if (archivosSubidos == null) {
+            return;
+        }
 
         for (MultipartFile multipart : archivosSubidos) {
-            if (multipart == null || multipart.isEmpty()) continue;
+            if (multipart == null || multipart.isEmpty()) {
+                continue;
+            }
 
             String nombreArchivo = multipart.getOriginalFilename();
             String extension = extraerExtension(nombreArchivo);
 
             if (!EXTENSIONES_PERMITIDAS.contains(extension)) {
                 throw new IllegalArgumentException(
-                        "Extensión no permitida: " + extension + " (use .png/.ppt/.pdf/.docx)");
+                        "Extensión no permitida: " + extension +
+                        " (use .png/.ppt/.pdf/.docx)");
             }
 
             try {
+                String sha256 = calcularSha256(multipart);
+
                 Document metadata = new Document("reunionId", reunionObjectId)
-                        .append("extension", extension);
-                // Necesitas el índice único: { "metadata.reunionId": 1, "filename": 1 } unique
+                        .append("extension", extension)
+                        .append("sha256", sha256);
+
+                // Requiere índice único: { "metadata.reunionId": 1, "filename": 1 } unique
                 gridFsTemplate.store(
                         multipart.getInputStream(),
                         nombreArchivo,
@@ -180,28 +200,40 @@ public class ReunionesServiceImp implements IReunionesService {
                 throw new IllegalArgumentException(
                         "Ya existe un archivo con ese nombre en esta reunión: " + nombreArchivo);
             } catch (IOException ioe) {
-                throw new RuntimeException("Error leyendo archivo: " + nombreArchivo);
+                throw new RuntimeException("Error leyendo archivo: " + nombreArchivo, ioe);
             }
         }
     }
 
-    private void borrarTodosArchivosGridFs(@NonNull ObjectId reunionObjectId) {
-        gridFsTemplate.delete(
-                new Query(Criteria.where("metadata.reunionId").is(reunionObjectId))
-        );
+    /**
+     * Elimina todos los archivos de GridFS asociados a una reunión.
+     */
+    private void borrarTodosArchivosGridFs(ObjectId reunionObjectId) {
+        Query query = new Query(Criteria.where("metadata.reunionId").is(reunionObjectId));
+        gridFsTemplate.delete(query);
     }
 
-    private List<String> actualizarExtensionesDesdeGridFs(@NonNull ObjectId reunionObjectId) {
+    /**
+     * Recalcula las extensiones presentes en GridFS y actualiza
+     * el campo archivosAdjuntos de la reunión.
+     */
+    private List<String> actualizarExtensionesDesdeGridFs(ObjectId reunionObjectId) {
+
         Set<String> conjuntoExtensiones = new HashSet<>();
 
         for (GridFSFile gridFile : gridFsTemplate.find(
                 new Query(Criteria.where("metadata.reunionId").is(reunionObjectId)))) {
 
-            String extension = (gridFile.getMetadata() != null)
-                    ? gridFile.getMetadata().getString("extension")
-                    : extraerExtension(gridFile.getFilename());
+            String extension;
+            if (gridFile.getMetadata() != null) {
+                extension = gridFile.getMetadata().getString("extension");
+            } else {
+                extension = extraerExtension(gridFile.getFilename());
+            }
 
-            if (extension != null) conjuntoExtensiones.add(extension);
+            if (extension != null) {
+                conjuntoExtensiones.add(extension);
+            }
         }
 
         ReunionesModel reunion = obtenerReunionPorObjectId(reunionObjectId);
@@ -215,17 +247,14 @@ public class ReunionesServiceImp implements IReunionesService {
 
     /* =================== Utilidades comunes =================== */
 
-    private ReunionesModel obtenerReunionPorObjectId(@NonNull ObjectId reunionObjectId) {
+    private ReunionesModel obtenerReunionPorObjectId(ObjectId reunionObjectId) {
         return reunionesRepository.findById(reunionObjectId)
                 .orElseThrow(() -> new IllegalArgumentException("Reunión no encontrada"));
     }
 
-    private @NonNull ObjectId convertirAObjectId(String idHex) {
-        if (idHex == null || idHex.isBlank()) {
-            throw new IllegalArgumentException("id de reunión es obligatorio");
-        }
+    private ObjectId convertirAObjectId(String idHex) {
         try {
-            return new ObjectId(idHex.trim());
+            return new ObjectId(idHex);
         } catch (Exception ex) {
             throw new IllegalArgumentException("ObjectId inválido: " + idHex);
         }
@@ -240,8 +269,25 @@ public class ReunionesServiceImp implements IReunionesService {
     }
 
     private String extraerExtension(String nombreArchivo) {
-        if (estaVacio(nombreArchivo) || !nombreArchivo.contains(".")) return "";
+        if (estaVacio(nombreArchivo) || !nombreArchivo.contains(".")) {
+            return "";
+        }
         return nombreArchivo.substring(nombreArchivo.lastIndexOf(".")).toLowerCase();
+    }
+
+    private String calcularSha256(MultipartFile archivo) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(archivo.getBytes());
+
+            StringBuilder sb = new StringBuilder();
+            for (byte b : hash) {
+                sb.append(String.format("%02x", b));
+            }
+            return sb.toString();
+        } catch (NoSuchAlgorithmException | IOException e) {
+            throw new RuntimeException("No fue posible calcular el hash del archivo.", e);
+        }
     }
 
     private <T> T tomarUnicoOPrimero(List<T> lista) {

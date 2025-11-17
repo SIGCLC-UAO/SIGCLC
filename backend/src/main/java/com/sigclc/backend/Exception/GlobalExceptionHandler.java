@@ -1,4 +1,4 @@
-package com.sigclc.backend.Usuarios.Exception;
+package com.sigclc.backend.Exception;
 
 import java.util.HashMap;
 import java.util.Map;
