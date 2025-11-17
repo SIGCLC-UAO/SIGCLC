@@ -10,18 +10,19 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class ReseniasResponseDTO {
+public class ReseniaDetailDTO {
 
     private String id;
     private String libroId;
+    private String libroTitulo;
+    private String libroAutor;
     private String autorId;
-    
+    private String autorNombreCompleto;
     private int calificacion;
-    private String opinion;
-    
-    private List<String> archivosAdjuntos;
+    private String opinionCompleta;
     private List<ComentarioResenia> comentarios;
-    
-    private Integer meGusta;
-    private Date fecha;
+    private List<String> archivosAdjuntos;
+    private Date creadaEnUTC;
+    private boolean esAutor;
+    private boolean puedeEditarEliminar;
 }

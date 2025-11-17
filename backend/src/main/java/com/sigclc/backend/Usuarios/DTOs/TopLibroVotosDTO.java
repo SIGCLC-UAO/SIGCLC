@@ -7,11 +7,15 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+
 public class TopLibroVotosDTO {
-  private String  libroId;     
-  private String  titulo;
-  private String  autor;
-  private Integer votosSi;
-  private Integer votosNo;
-  private Integer totalVotos;
+
+    private String libroId;
+
+    private String titulo;
+    private String autor;
+
+    private Integer votosSi;     
+    private Integer votosNo;    
+    private Integer totalVotos;  
 }

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.sigclc.backend.Libros.DTOs.LibrosCreateDTO;
 import com.sigclc.backend.Libros.DTOs.LibrosResponseDTO;
+import com.sigclc.backend.Libros.DTOs.LibrosUpdateDTO;
 import com.sigclc.backend.Libros.Mapper.LibrosMapper;
 import com.sigclc.backend.Libros.Models.LibrosModel;
 import com.sigclc.backend.Libros.Repository.ILibrosRepository;
@@ -39,13 +40,25 @@ public class LibrosServiceImp implements ILibrosService{
     }
 
     @Override
-    public LibrosModel buscarLibroPorId(ObjectId idLibro) {
+    public LibrosResponseDTO buscarLibroPorId(String idLibro) {
         if (idLibro == null){
             throw new IllegalArgumentException("El id no puede ser nulo");
         }
-        return librosRepository.findById(idLibro).
-        orElseThrow(()-> new RecursoNoEncontradoException("El libro con " +idLibro+ " no se ha encontrado o esta mal escrito"));
-    }
+
+        ObjectId objectId;
+        try {
+            objectId = new ObjectId(idLibro);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("El formato del id no es válido"); 
+        }
+
+        LibrosModel librosModel = librosRepository.findById(objectId)
+        .orElseThrow(()-> new RecursoNoEncontradoException(
+            "El libro con id "+idLibro+" no se ha encontrado o está mal escrito"
+        ));
+        return  librosMapper.toResponseDTO(librosModel); 
+
+    }     
 
     @Override
     public List<LibrosResponseDTO> buscarPorTitulo(String titulo) {
@@ -76,5 +89,50 @@ public class LibrosServiceImp implements ILibrosService{
        List<LibrosModel>  libros = librosRepository.buscarPorGenero(genero);
         return librosMapper.toResponseDTOList(libros);
     }
+
+     
+    @Override
+    public LibrosResponseDTO actualizarLibro(String idLibro, LibrosUpdateDTO dto){
+        if (idLibro == null){
+            throw new IllegalArgumentException("El id no puede ser nulo");
+        }
+
+        ObjectId objectId;
+        try {
+            objectId = new ObjectId(idLibro);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("El formato del id no es válido"); 
+        }
+
+        LibrosModel libroExistente = librosRepository.findById(objectId)
+        .orElseThrow(()-> new RecursoNoEncontradoException(
+            "El libro con id "+idLibro+" no se ha encontrado o está mal escrito"
+        ));
+
+        librosMapper.UpdateDTO(dto, libroExistente);
+
+        LibrosModel actualizado = librosRepository.save(libroExistente);
+
+        return  librosMapper.toResponseDTO(actualizado);        
+    }
+
+    @Override
+    public void eliminarLibroPorId(String idLibro){
+        if (idLibro == null){
+            throw new IllegalArgumentException("El id no puede ser nulo");
+        }
+
+        ObjectId objectId;
+        try {
+            objectId = new ObjectId(idLibro);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("El formato del id no es valido");
+        }
+
+        librosRepository.deleteById(objectId);
+
+    }
+
+    
 
 }

@@ -7,6 +7,8 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -17,14 +19,31 @@ public class ReseniasModel {
 
     @Id
     private ObjectId id;
-
+    
     private ObjectId libroId;
     private ObjectId autorId;
+    
     private int calificacion;
     private String opinion;
-
+    
     private List<String> archivosAdjuntos;
     private List<ComentarioResenia> comentarios;
+    
     private Integer meGusta = 0;
     private Date fecha = new Date();
+
+    @JsonProperty("id")
+    public String getIdAsString() {
+        return id != null ? id.toHexString() : null;
+    }
+    
+    @JsonProperty("libroId")
+    public String getLibroIdAsString() {
+        return libroId != null ? libroId.toHexString() : null;
+    }
+    
+    @JsonProperty("autorId")
+    public String getAutorIdAsString() {
+        return autorId != null ? autorId.toHexString() : null;
+    }
 }

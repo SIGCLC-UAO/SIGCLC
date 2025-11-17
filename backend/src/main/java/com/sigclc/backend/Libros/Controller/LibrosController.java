@@ -4,7 +4,6 @@ package com.sigclc.backend.Libros.Controller;
 import java.util.Date;
 import java.util.List;
 
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -24,10 +23,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import com.sigclc.backend.Libros.DTOs.LibrosCreateDTO;
 import com.sigclc.backend.Libros.DTOs.LibrosResponseDTO;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import com.sigclc.backend.Libros.Models.LibrosModel;
+import org.springframework.web.bind.annotation.PutMapping;
+
+import com.sigclc.backend.Libros.DTOs.LibrosUpdateDTO;
+
+
+
 
 
 
@@ -53,8 +58,8 @@ public class LibrosController {
     }
     
     @GetMapping("/libroporId/{id}")
-    public ResponseEntity<LibrosModel>buscarLibroPorId(@PathVariable ObjectId id){
-        return new ResponseEntity<LibrosModel>(librosService.buscarLibroPorId(id),HttpStatus.OK);
+    public ResponseEntity<LibrosResponseDTO>buscarLibroPorId(@PathVariable String id){
+        return new ResponseEntity<LibrosResponseDTO>(librosService.buscarLibroPorId(id),HttpStatus.OK);
     }
 
     @GetMapping("/buscar/titulo/{titulo}")
@@ -81,4 +86,16 @@ public class LibrosController {
     public  ResponseEntity<List<LibrosResponseDTO>> buscarPorGenero(@PathVariable String genero){
         return new ResponseEntity<List<LibrosResponseDTO>>(librosService.buscarPorGenero(genero),HttpStatus.OK);
     }
+
+    @PutMapping("/actualizarPorId/{id}")
+    public ResponseEntity<LibrosResponseDTO>actualizarLibro(@PathVariable String id, @RequestBody LibrosUpdateDTO dto){
+        return new ResponseEntity<LibrosResponseDTO>(librosService.actualizarLibro(id, dto),HttpStatus.OK);
+    }
+
+    @DeleteMapping("/eliminarPorId/{id}")
+    public ResponseEntity<LibrosResponseDTO>eliminarLibroPorId(@PathVariable String id){
+        librosService.eliminarLibroPorId(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
 }

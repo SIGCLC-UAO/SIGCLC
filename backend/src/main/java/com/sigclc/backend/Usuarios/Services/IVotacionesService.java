@@ -5,37 +5,32 @@ import java.util.List;
 import org.bson.types.ObjectId;
 
 import com.sigclc.backend.Usuarios.DTOs.UsuarioResponseDTO;
+import com.sigclc.backend.Usuarios.DTOs.VotoCreateDTO;
+import com.sigclc.backend.Usuarios.DTOs.VotoUpdateDTO;
 
 public interface IVotacionesService {
 
-    // Agregar un voto a la propuesta (de un usuario) sobre un libro
+    // Agregar un voto a una propuesta de libro
     UsuarioResponseDTO agregarVoto(
-        ObjectId usuarioIdPropuesta,   // usuario dueño de la propuesta
-        ObjectId libroId,              // libro propuesto
-        ObjectId votanteId,            // usuario que vota
-        String   voto,                 // "Si" | "No"
-        String   fechaVoto             // ISO-8601 sugerido; tu modelo usa String
-    );
+            ObjectId usuarioIdPropuesta,
+            String libroIdHex,
+            VotoCreateDTO body);
 
-    // Actualizar el voto de un votante en esa propuesta
+    // Actualizar un voto existente
     UsuarioResponseDTO actualizarVoto(
-        ObjectId usuarioIdPropuesta,
-        ObjectId libroId,
-        ObjectId votanteId,
-        String   nuevoVoto,
-        String   nuevaFechaVoto
-    );
+            ObjectId usuarioIdPropuesta,
+            String libroIdHex,
+            String votanteIdHex,
+            VotoUpdateDTO body);
 
-    // Eliminar el voto de un votante en esa propuesta
+    // Eliminar un voto
     UsuarioResponseDTO eliminarVoto(
-        ObjectId usuarioIdPropuesta,
-        ObjectId libroId,
-        ObjectId votanteId
-    );
+            ObjectId usuarioIdPropuesta,
+            String libroIdHex,
+            String votanteIdHex);
 
-    // Listar votos de una propuesta (si la propuesta está "En Votacion" puedes decidir ocultarlos en controlador)
+    // Listar todos los votos de una propuesta
     List<UsuarioResponseDTO.VotacionDTO> listarVotosDePropuesta(
-        ObjectId usuarioIdPropuesta,
-        ObjectId libroId
-    );
+            ObjectId usuarioIdPropuesta,
+            String libroIdHex);
 }
