@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.sigclc.backend.Reseñas.DTOs.ComentarioCreateDTO;
 import com.sigclc.backend.Reseñas.DTOs.FiltroReseniasDTO;
@@ -27,7 +29,6 @@ import com.sigclc.backend.Reseñas.DTOs.ReseniaUpdateDTO;
 import com.sigclc.backend.Reseñas.DTOs.ReseniasCreateDTO;
 import com.sigclc.backend.Reseñas.DTOs.ReseniasResponseDTO;
 import com.sigclc.backend.Reseñas.DTOs.StatsReseniasDTO;
-import com.sigclc.backend.Reseñas.DTOs.TopReviewerDTO;
 import com.sigclc.backend.Reseñas.Services.IReseniasService;
 
 @RestController
@@ -39,14 +40,26 @@ public class ReseniasController {
     private IReseniasService service;
 
     @PostMapping("/crear")
-    public ResponseEntity<?> crear(@RequestBody @Validated ReseniasCreateDTO dto, BindingResult result) {
+    public ResponseEntity<?> crear(
+            @RequestBody @Validated ReseniasCreateDTO dto,
+            BindingResult result) {
+
         if (result.hasErrors()) {
-            List<String> errores = result.getAllErrors()
-                    .stream().map(x -> x.getDefaultMessage()).toList();
+            List<String> errores = result.getAllErrors().stream()
+                    .map(x -> x.getDefaultMessage()).toList();
             return ResponseEntity.badRequest().body(errores);
         }
-        
+
         return new ResponseEntity<>(service.crearResenia(dto), HttpStatus.CREATED);
+    }
+
+    
+    @PostMapping("/crear-con-archivos")
+    public ResponseEntity<?> crearConArchivos(
+            @RequestPart("datos") @Validated ReseniasCreateDTO dto,
+            @RequestPart(value = "archivos", required = false) List<MultipartFile> archivos) {
+
+        return new ResponseEntity<>(service.crearReseniaConArchivos(dto, archivos), HttpStatus.CREATED);
     }
 
     @PutMapping("/actualizar/{id}")
@@ -55,13 +68,13 @@ public class ReseniasController {
             @RequestBody @Validated ReseniaUpdateDTO dto,
             @RequestHeader("usuarioId") String usuarioId,
             BindingResult result) {
-        
+
         if (result.hasErrors()) {
-            List<String> errores = result.getAllErrors()
-                    .stream().map(x -> x.getDefaultMessage()).toList();
+            List<String> errores = result.getAllErrors().stream()
+                    .map(x -> x.getDefaultMessage()).toList();
             return ResponseEntity.badRequest().body(errores);
         }
-        
+
         return ResponseEntity.ok(service.actualizarResenia(id, dto, usuarioId));
     }
 
@@ -69,13 +82,13 @@ public class ReseniasController {
     public ResponseEntity<String> eliminar(
             @PathVariable String id,
             @RequestHeader("usuarioId") String usuarioId) {
-        
+
         service.eliminarResenia(id, usuarioId);
         return ResponseEntity.ok("Reseña eliminada correctamente");
     }
 
     @GetMapping("/listar")
-    public ResponseEntity<List<ReseniaListViewDTO>> listarConFiltros(
+    public ResponseEntity<List<ReseniaListViewDTO>> listar(
             @RequestParam(required = false) String libroId,
             @RequestParam(required = false) String autorId,
             @RequestParam(required = false) Integer calificacionMin,
@@ -83,7 +96,7 @@ public class ReseniasController {
             @RequestParam(required = false) Boolean tieneAdjuntos,
             @RequestParam(required = false) String texto,
             @RequestParam(required = false) String comentadoPor) {
-        
+
         FiltroReseniasDTO filtros = new FiltroReseniasDTO();
         filtros.setLibroId(libroId);
         filtros.setAutorId(autorId);
@@ -92,7 +105,7 @@ public class ReseniasController {
         filtros.setTieneAdjuntos(tieneAdjuntos);
         filtros.setTexto(texto);
         filtros.setComentadoPor(comentadoPor);
-        
+
         return ResponseEntity.ok(service.listarConFiltros(filtros));
     }
 
@@ -100,29 +113,29 @@ public class ReseniasController {
     public ResponseEntity<ReseniaDetailDTO> obtenerDetalle(
             @PathVariable String id,
             @RequestHeader("usuarioId") String usuarioId) {
-        
+
         return ResponseEntity.ok(service.obtenerDetalle(id, usuarioId));
     }
 
     @GetMapping("/mis-resenias")
     public ResponseEntity<List<ReseniaListViewDTO>> misResenias(
             @RequestHeader("usuarioId") String usuarioId) {
-        
+
         return ResponseEntity.ok(service.misResenias(usuarioId));
     }
 
     @PostMapping("/comentar/{idResenia}")
-    public ResponseEntity<String> agregarComentario(
+    public ResponseEntity<String> comentar(
             @PathVariable String idResenia,
             @RequestBody @Validated ComentarioCreateDTO dto,
             BindingResult result) {
-        
+
         if (result.hasErrors()) {
-            List<String> errores = result.getAllErrors()
-                    .stream().map(x -> x.getDefaultMessage()).toList();
+            List<String> errores = result.getAllErrors().stream()
+                    .map(x -> x.getDefaultMessage()).toList();
             return ResponseEntity.badRequest().body(errores.toString());
         }
-        
+
         service.agregarComentario(idResenia, dto);
         return ResponseEntity.ok("Comentario agregado correctamente");
     }
@@ -132,20 +145,20 @@ public class ReseniasController {
             @PathVariable String idResenia,
             @RequestParam String usuarioId,
             @RequestParam String textoComentario) {
-        
+
         service.eliminarComentario(idResenia, usuarioId, textoComentario);
         return ResponseEntity.ok("Comentario eliminado correctamente");
     }
 
     @GetMapping("/estadisticas/libro/{libroId}")
-    public ResponseEntity<StatsReseniasDTO> obtenerEstadisticas(@PathVariable String libroId) {
+    public ResponseEntity<StatsReseniasDTO> estadisticas(
+            @PathVariable String libroId) {
+
         return ResponseEntity.ok(service.obtenerEstadisticasPorLibro(libroId));
     }
 
     @GetMapping("/top-reviewers")
-    public ResponseEntity<List<TopReviewerDTO>> obtenerTopReviewers(
-            @RequestParam(defaultValue = "10") int limite) {
-        
+    public ResponseEntity<?> topReviewers(@RequestParam(defaultValue = "10") int limite) {
         return ResponseEntity.ok(service.obtenerTopReviewers(limite));
     }
 
