@@ -59,36 +59,66 @@ public class ComentariosServiceImp implements  IComentariosService {
 
     @Override
     public List<ComentariosResponseDTO> buscarPorForoId(String foroId) {
-        
-        return comentariosMapper.toResponseDTOList(comentariosRepository.buscarPorForoId(foroId));
-
+            List<ComentariosModel> comentarios = comentariosRepository.buscarPorForoId(foroId);
+            return comentariosMapper.toResponseDTOList(comentarios);
     }
 
     @Override
     public List<ComentariosResponseDTO> buscarPorFecha(Date fecha) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        List<ComentariosModel> comentarios = comentariosRepository.buscarPorFecha(fecha);
+        return comentariosMapper.toResponseDTOList(comentarios);
     }
 
     @Override
     public List<ComentariosResponseDTO> buscarPorUsuario(String usuarioId) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        List<ComentariosModel> comentarios = comentariosRepository.buscarPorUsuario(usuarioId);
+        return comentariosMapper.toResponseDTOList(comentarios);
     }
 
     @Override
     public List<ComentariosResponseDTO> buscarPorComentarioId(String comentarioId) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        List<ComentariosModel> comentarios = comentariosRepository.buscarPorComentarioId(comentarioId);
+        return comentariosMapper.toResponseDTOList(comentarios);
     }
 
     @Override
     public ComentariosResponseDTO actualizarComentario(String id, ComentariosUpdateDTO dto) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if( id == null){
+            throw new IllegalArgumentException("El id no puede ser nulo");
+        }
+        ObjectId objectId;
+        try {
+            objectId = new ObjectId(id);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("El formato del id no es válido"); 
+        }
+
+        ComentariosModel comentario = comentariosRepository.findById(objectId)
+        .orElseThrow(()-> new RecursoNoEncontradoException(
+            "El libro con id "+id+" no se ha encontrado o está mal escrito"
+        ));
+
+        comentariosMapper.UpdateDTO(dto, comentario);
+
+        ComentariosModel actualizado = comentariosRepository.save(comentario);
+
+        return  comentariosMapper.toResponseDTO(actualizado); 
     }
 
     @Override
     public void eliminarComentario(String id) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+        if (id == null){
+            throw new IllegalArgumentException("El id no puede ser nulo");
+        }
 
+        ObjectId objectId;
+        try {
+            objectId = new ObjectId(id);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("El formato del id no es valido");
+        }
 
-    
+        comentariosRepository.deleteById(objectId);
+
+    }        
 }

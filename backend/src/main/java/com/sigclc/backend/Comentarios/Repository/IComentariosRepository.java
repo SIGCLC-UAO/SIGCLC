@@ -19,27 +19,27 @@ public interface  IComentariosRepository extends  MongoRepository<ComentariosMod
     @Aggregation(pipeline = {
         "{ $match: {} }"
     })
-    public List<ComentariosResponseDTO> listarComentarios();
+    public List<ComentariosModel> listarComentarios();
     @Aggregation(pipeline={
-        "{$match: {_id:?0 } }"
+        "{$match: {_id: ?0 } }"
     })
     public ComentariosResponseDTO buscarPorId(String Id);
     @Aggregation(pipeline = {
-        "{ $match: { foroId:?0 } }"
+        "{ $match: { foroId: ?0 } }"
     })
-    public List<ComentariosResponseDTO> buscarPorForoId(String foroId);
+    public List<ComentariosModel> buscarPorForoId(String foroId);
     @Aggregation(pipeline = {
         "{ $match: { fechaComentario: ?0 } }"
     })
-    public List<ComentariosResponseDTO> buscarPorFecha (Date fecha);
+    public List<ComentariosModel> buscarPorFecha (Date fecha);
     @Aggregation(pipeline = {
-        "{ $match: { usuarioId: ObjectId(?0) } }"
+        "{ $match: { usuarioId: ?0 } }"
     })
-    public List<ComentariosResponseDTO> buscarPorUsuario (String usuarioId);
+    public List<ComentariosModel> buscarPorUsuario (String usuarioId);
     @Aggregation(pipeline = {
-        "{ $match: { comentarioId: ObjectId(?0) } }"
+        "{ $match: { comentarioId: ?0 } }"
     })
-    public List<ComentariosResponseDTO> buscarPorComentarioId (String comentarioId);
+    public List<ComentariosModel> buscarPorComentarioId (String comentarioId);
     public ComentariosResponseDTO actualizarComentario(String id, ComentariosUpdateDTO dto);
     public void eliminarComentario (String id);
     
