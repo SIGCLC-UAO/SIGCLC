@@ -1,6 +1,5 @@
 package com.sigclc.backend.Reuniones.DTOs;
 
-import org.bson.types.ObjectId;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
