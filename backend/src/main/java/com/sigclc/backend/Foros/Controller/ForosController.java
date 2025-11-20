@@ -20,6 +20,7 @@ import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import com.sigclc.backend.Foros.DTOs.ForosResponseDTO;
@@ -64,9 +65,9 @@ public class ForosController {
         return new ResponseEntity<List<ForosResponseDTO>>(forosService.buscarPorCreadorId(creadorId), HttpStatus.OK);
     }
 
-    @PutMapping("/actualizar/{id}")
-    public ResponseEntity<ForosResponseDTO>actualizarForo(@PathVariable String id, @RequestBody ForosUpdateDTO dto){
-        return new ResponseEntity<ForosResponseDTO>(forosService.actualizarForo(id, dto),HttpStatus.OK);
+    @PatchMapping("/actualizar/{id}")
+    public ResponseEntity<ForosResponseDTO> actualizarForo(@PathVariable String id, @RequestBody ForosUpdateDTO dto) {
+        return new ResponseEntity<>(forosService.actualizarForo(id, dto), HttpStatus.OK);
     }
 
     @DeleteMapping("/eliminar/{id}")

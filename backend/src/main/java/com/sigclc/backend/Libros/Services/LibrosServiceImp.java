@@ -92,8 +92,8 @@ public class LibrosServiceImp implements ILibrosService{
 
      
     @Override
-    public LibrosResponseDTO actualizarLibro(String idLibro, LibrosUpdateDTO dto){
-        if (idLibro == null){
+    public LibrosResponseDTO actualizarLibro(String idLibro, LibrosUpdateDTO dto) {
+        if (idLibro == null) {
             throw new IllegalArgumentException("El id no puede ser nulo");
         }
 
@@ -105,15 +105,15 @@ public class LibrosServiceImp implements ILibrosService{
         }
 
         LibrosModel libroExistente = librosRepository.findById(objectId)
-        .orElseThrow(()-> new RecursoNoEncontradoException(
-            "El libro con id "+idLibro+" no se ha encontrado o está mal escrito"
-        ));
+            .orElseThrow(() -> new RecursoNoEncontradoException(
+                "El libro con id " + idLibro + " no se ha encontrado o está mal escrito"
+            ));
 
         librosMapper.UpdateDTO(dto, libroExistente);
 
         LibrosModel actualizado = librosRepository.save(libroExistente);
 
-        return  librosMapper.toResponseDTO(actualizado);        
+        return librosMapper.toResponseDTO(actualizado);        
     }
 
     @Override

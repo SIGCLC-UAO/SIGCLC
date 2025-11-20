@@ -17,17 +17,11 @@ import lombok.NoArgsConstructor;
 
 public class RetosUpdateDTO {
     
-    @NotBlank(message="El titulo es obligatorios")
     private String titulo;
-    @NotNull(message="La fecha de inicio es obligatorios")
     private Date fechaInicio;
-    @NotNull(message="La fecha de fin es obligatorios")
     private Date fechaFin;
-    @NotBlank(message="La descripcion es obligatorios")
     private String descripcion;
-    @NotNull(message="Los libros Asociados son obligatorios")
     private List<RetosCreateDTO.librosAsociadosDTO>librosAsociados;
-    @NotNull(message="Los participantes son obligatorios")
     private List<RetosCreateDTO.ParticipantesDTO>participantes;   
     
     

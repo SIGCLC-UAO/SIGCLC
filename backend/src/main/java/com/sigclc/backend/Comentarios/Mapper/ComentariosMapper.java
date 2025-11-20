@@ -50,15 +50,16 @@ public class ComentariosMapper {
         
     }
 
-    public void UpdateDTO(ComentariosUpdateDTO dto, ComentariosModel model){
-        if(dto == null || model == null) return ;
+    public void UpdateDTO(ComentariosUpdateDTO dto, ComentariosModel model) {
+        if (dto == null || model == null) return;  // Si el DTO o el modelo son nulos, no hacemos nada
 
-        if(dto.getForoId() != null) model.setForoId(dto.getForoId());
-        if(dto.getMensaje() != null) model.setMensaje(dto.getMensaje());
-        if(dto.getFechaComentario() != null) model.setFechaComentario(dto.getFechaComentario());
-        if(dto.getUsuarioId() != null) model.setUsuarioId(new ObjectId(dto.getUsuarioId()));
+        // Actualizamos solo los campos que no sean nulos
+        if (dto.getForoId() != null) model.setForoId(dto.getForoId());
+        if (dto.getMensaje() != null) model.setMensaje(dto.getMensaje());
+        if (dto.getFechaComentario() != null) model.setFechaComentario(dto.getFechaComentario());
+        if (dto.getUsuarioId() != null) model.setUsuarioId(new ObjectId(dto.getUsuarioId()));
 
-        if(dto.getComentarioId()!= null){
+        if (dto.getComentarioId() != null) {
             model.setComentarioId(new ObjectId(dto.getComentarioId()));
         }
     }
