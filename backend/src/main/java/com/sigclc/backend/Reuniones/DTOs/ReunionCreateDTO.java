@@ -27,4 +27,7 @@ public class ReunionCreateDTO {
     private String libroId;              
 
     private List<String> asistentesIds; 
+
+
+
 }

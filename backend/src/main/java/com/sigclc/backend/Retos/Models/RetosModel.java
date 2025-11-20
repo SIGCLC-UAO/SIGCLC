@@ -23,14 +23,14 @@ import lombok.NoArgsConstructor;
 public class RetosModel {
     
     @Id
-    public ObjectId id;
-    public String titulo;
-    public Date fechaInicio;
-    public Date fechaFin;
-    public String descripcion;
+    private ObjectId id;
+    private String titulo;
+    private Date fechaInicio;
+    private Date fechaFin;
+    private String descripcion;
     @Field("libroAsociados")
-    public List<librosAsociados>libroAsociados;
-    public List<Participantes>participantes;
+    private List<librosAsociados>libroAsociados;
+    private List<Participantes>participantes;
 
     
     @JsonProperty("id")
@@ -42,23 +42,23 @@ public class RetosModel {
     @AllArgsConstructor
     @NoArgsConstructor
     public  static class librosAsociados{
-        public ObjectId libroId;
+        private ObjectId libroId;
     }
 
     @Data
     @AllArgsConstructor
     @NoArgsConstructor    
     public static class Participantes{
-        public ObjectId usuarioId;
-        public List<Progreso>progreso;
+        private ObjectId usuarioId;
+        private List<Progreso>progreso;
     }
 
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
     public static class Progreso{
-        public ObjectId libroId;
-        public String progreso;
+        private ObjectId libroId;
+        private String progreso;
     }
 
 }

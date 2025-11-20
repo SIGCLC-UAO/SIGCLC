@@ -8,7 +8,10 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.sigclc.backend.Reuniones.DTOs.GeneroCountDTO;
+import com.sigclc.backend.Reuniones.DTOs.LibroCountDTO;
 import com.sigclc.backend.Reuniones.DTOs.ReunionResponseDTO;
+import com.sigclc.backend.Reuniones.DTOs.UsuarioActivoDTO;
 import com.sigclc.backend.Reuniones.Repository.IReunionesRepository;
 
 @Service
@@ -51,6 +54,24 @@ public class ReunionesListadosImp implements IReunionesListados {
         return reunionesRepository.resumenProximas(fechaReferencia);
     }
 
+
+    @Override
+    public List<LibroCountDTO> obtenerTopLibros() {
+        return reunionesRepository.obtenerTopLibros();
+    }
+
+    @Override
+    public List<GeneroCountDTO> obtenerTopGeneros() {
+        return reunionesRepository.obtenerTopGeneros();
+    }
+
+    @Override
+    public List<UsuarioActivoDTO> obtenerUsuariosMasActivos() {
+        return reunionesRepository.obtenerUsuariosMasActivos();
+    }
+
+    
+
     /* Util */
     private ObjectId convertirAObjectId(String idHex) {
         try {
@@ -59,4 +80,6 @@ public class ReunionesListadosImp implements IReunionesListados {
             throw new IllegalArgumentException("ObjectId inválido: " + idHex);
         }
     }
+
+
 }
