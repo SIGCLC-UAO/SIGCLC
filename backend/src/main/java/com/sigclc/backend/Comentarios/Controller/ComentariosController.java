@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 
 
 @RestController
-@RequestMapping("/SIGCLC/api/libros")
+@RequestMapping("/SIGCLC/api/comentarios")
 
 
 public class ComentariosController {
@@ -55,7 +55,7 @@ public class ComentariosController {
         return new ResponseEntity<ComentariosResponseDTO>(comentariosService.buscarPorId(id), HttpStatus.OK);
     }
 
-    @GetMapping("/foroId/{foroId}")
+    @GetMapping("/buscarPorForoId/{foroId}")
     public ResponseEntity<List<ComentariosResponseDTO>>buscarPorForoId(@PathVariable String foroId){
         return new ResponseEntity<List<ComentariosResponseDTO>>(comentariosService.buscarPorForoId(foroId), HttpStatus.OK);
     }

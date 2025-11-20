@@ -9,7 +9,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 import com.sigclc.backend.Comentarios.DTOs.ComentariosResponseDTO;
-import com.sigclc.backend.Comentarios.DTOs.ComentariosUpdateDTO;
 import com.sigclc.backend.Comentarios.Models.ComentariosModel;
 
 @Repository
@@ -40,8 +39,5 @@ public interface  IComentariosRepository extends  MongoRepository<ComentariosMod
         "{ $match: { comentarioId: ?0 } }"
     })
     public List<ComentariosModel> buscarPorComentarioId (String comentarioId);
-    public ComentariosResponseDTO actualizarComentario(String id, ComentariosUpdateDTO dto);
-    public void eliminarComentario (String id);
-    
 }
 
