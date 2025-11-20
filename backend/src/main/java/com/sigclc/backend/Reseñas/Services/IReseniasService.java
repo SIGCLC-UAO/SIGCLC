@@ -74,4 +74,6 @@ public interface IReseniasService {
     void marcarUtil(String idResenia);
 
     void comentar(String idResenia, String utilidad, String usuarioId, String comentario);
+
+
 }

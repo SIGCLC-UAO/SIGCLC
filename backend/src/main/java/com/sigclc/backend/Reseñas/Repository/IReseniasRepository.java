@@ -7,6 +7,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
+import com.sigclc.backend.Reseñas.DTOs.TopReviewerDTO;
 import com.sigclc.backend.Reseñas.Models.ReseniasModel;
 
 public interface IReseniasRepository extends MongoRepository<ReseniasModel, ObjectId> {
@@ -29,4 +30,6 @@ public interface IReseniasRepository extends MongoRepository<ReseniasModel, Obje
         "{ $group: { _id: '$libroId', promedio: { $avg: '$calificacion' }, total: { $sum: 1 } } }"
     })
     Object findStatsByLibro(ObjectId libroId);
+
+
 }
