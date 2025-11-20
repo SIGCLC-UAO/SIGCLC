@@ -16,21 +16,21 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 
-@Document("Comentarios")
+@Document("ComentarioPost")
 
 public class ComentariosModel {
     
     @Id
-    private ObjectId Id;
+    private ObjectId id;
     private String foroId;
     private String mensaje;
     private Date fechaComentario;
     private ObjectId usuarioId;
     private ObjectId comentarioId;
 
-    @JsonProperty("Id")
+    @JsonProperty("id")
     public String getIdAsString(){
-        return Id != null ? Id.toHexString():null;
+        return id != null ? id.toHexString():null;
     }
 
 }

@@ -69,9 +69,9 @@ public class ForosController {
         return new ResponseEntity<ForosResponseDTO>(forosService.actualizarForo(id, dto),HttpStatus.OK);
     }
 
-        @DeleteMapping("/eliminar/{id}")
-
+    @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<ForosResponseDTO>eliminarForo(@PathVariable String id){
+        forosService.eliminarForo(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

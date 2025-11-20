@@ -12,10 +12,6 @@ public interface IForosRepository extends MongoRepository<ForosModel, ObjectId>{
     
 
     @Aggregation(pipeline = {
-        "{ '$match': { '_id': { $oid: ?0 } } }"
-    })
-    public ForosModel buscarForoPorId(String Id);
-    @Aggregation(pipeline = {
         "{ '$match': { 'tipo': ?0 } }",
     })
     public List<ForosModel> buscarPorTipo(String tipo);

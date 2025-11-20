@@ -3,6 +3,7 @@ package com.sigclc.backend.Comentarios.DTOs;
 import java.util.Date;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,7 +18,7 @@ public class ComentariosCreateDTO {
     private String foroId;
     @NotBlank(message="El mensaje es obligatorio")    
     private String mensaje;
-    @NotBlank(message="La fecha es obligatoria")
+    @NotNull(message="La fecha es obligatoria")
     private Date fechaComentario; 
     @NotBlank(message="El id de usuario es obligatorio")
     private String usuarioId;

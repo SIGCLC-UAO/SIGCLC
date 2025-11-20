@@ -32,11 +32,11 @@ public interface  IComentariosRepository extends  MongoRepository<ComentariosMod
     })
     public List<ComentariosModel> buscarPorFecha (Date fecha);
     @Aggregation(pipeline = {
-        "{ $match: { usuarioId: ?0 } }"
+        "{ $match: { usuarioId: ObjectId(?0) } }"
     })
     public List<ComentariosModel> buscarPorUsuario (String usuarioId);
     @Aggregation(pipeline = {
-        "{ $match: { comentarioId: ?0 } }"
+        "{ $match: { comentarioId: ObjectId(?0) } }"
     })
     public List<ComentariosModel> buscarPorComentarioId (String comentarioId);
 }

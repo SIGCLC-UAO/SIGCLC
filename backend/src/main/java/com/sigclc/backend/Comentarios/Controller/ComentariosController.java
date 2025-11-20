@@ -50,7 +50,7 @@ public class ComentariosController {
         return new ResponseEntity<List<ComentariosResponseDTO>>(comentariosService.listarComentarios(), HttpStatus.OK);
     }
 
-    @GetMapping("/comentarioPorId/{id}")
+    @GetMapping("/buscarPorId/{id}")
     public ResponseEntity<ComentariosResponseDTO>buscarPorId(@PathVariable String id){
         return new ResponseEntity<ComentariosResponseDTO>(comentariosService.buscarPorId(id), HttpStatus.OK);
     }
@@ -69,7 +69,7 @@ public class ComentariosController {
     public ResponseEntity<List<ComentariosResponseDTO>>buscarPorUsuario(@PathVariable String usuarioId){
         return new ResponseEntity<List<ComentariosResponseDTO>>(comentariosService.buscarPorUsuario(usuarioId), HttpStatus.OK);
     }
-    @GetMapping("/ComentarioId/{comentarioId}")
+    @GetMapping("/respuesta/{comentarioId}")
     public ResponseEntity<List<ComentariosResponseDTO>>buscarPorComentarioId(@PathVariable String comentarioId){
         return new ResponseEntity<List<ComentariosResponseDTO>>(comentariosService.buscarPorComentarioId(comentarioId), HttpStatus.OK);
     }
@@ -84,9 +84,4 @@ public class ComentariosController {
         comentariosService.eliminarComentario(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
-
-
-    
-    
 }
