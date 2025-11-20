@@ -71,7 +71,7 @@ public class ForosServiceImp implements IForosService{
         }
         ObjectId objectId;
         try {
-            objectId = new ObjectId(id);
+            objectId = new ObjectId(id);  
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("El formato del id no es válido"); 
         }

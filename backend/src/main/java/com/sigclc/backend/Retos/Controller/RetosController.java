@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -115,10 +116,10 @@ public class RetosController{
 
 
     @PutMapping("/actualizar/{id}")
-    public ResponseEntity<RetosResponseDTO> actualizarReto(@PathVariable String id, @RequestBody RetosUpdateDTO reto){
-        return new ResponseEntity<>(retosService.actualizarReto(id, reto),HttpStatus.OK);
+    public ResponseEntity<?> actualizarReto(@PathVariable String id, @RequestBody RetosUpdateDTO retoDTO) {
+        return new ResponseEntity<>(retosService.actualizarReto(id, retoDTO), HttpStatus.OK);
     }
-
+    
     @DeleteMapping("/eliminarPorId/{id}")
     public ResponseEntity<RetosResponseDTO>eliminarRetoPorId(@PathVariable String id){
         retosService.eliminarRetoPorId(id);

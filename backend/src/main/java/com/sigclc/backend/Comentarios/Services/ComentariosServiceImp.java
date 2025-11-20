@@ -83,26 +83,25 @@ public class ComentariosServiceImp implements  IComentariosService {
 
     @Override
     public ComentariosResponseDTO actualizarComentario(String id, ComentariosUpdateDTO dto) {
-        if( id == null){
+        if (id == null) {
             throw new IllegalArgumentException("El id no puede ser nulo");
         }
+
         ObjectId objectId;
         try {
-            objectId = new ObjectId(id);
+            objectId = new ObjectId(id);  
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("El formato del id no es válido"); 
+            throw new IllegalArgumentException("El formato del id no es válido");
         }
 
         ComentariosModel comentario = comentariosRepository.findById(objectId)
-        .orElseThrow(()-> new RecursoNoEncontradoException(
-            "El libro con id "+id+" no se ha encontrado o está mal escrito"
-        ));
+                .orElseThrow(() -> new RecursoNoEncontradoException(
+                        "El comentario con id " + id + " no se ha encontrado o está mal escrito"
+                ));
 
         comentariosMapper.UpdateDTO(dto, comentario);
-
         ComentariosModel actualizado = comentariosRepository.save(comentario);
-
-        return  comentariosMapper.toResponseDTO(actualizado); 
+        return comentariosMapper.toResponseDTO(actualizado);
     }
 
     @Override
