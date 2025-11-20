@@ -1,5 +1,8 @@
 package com.sigclc.backend.Foros.Mapper;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Component;
 
 import com.sigclc.backend.Foros.DTOs.ForosCreateDTO;
@@ -31,6 +34,7 @@ public class ForosMapper {
         dto.setCreadorId(model.getCreadorId());
         dto.setTipo(model.getTipo());
 
+
         return  dto;
 
     }
@@ -42,5 +46,11 @@ public class ForosMapper {
         if(dto.getCreadorId() != null ) model.setCreadorId(dto.getCreadorId());
     }
 
-    public 
+    public List<ForosResponseDTO> toResponseDTOList(List<ForosModel> foros) {
+        if(foros == null) return null;
+
+        return foros.stream()
+                .map(this::toResponseDTO)
+                .collect(Collectors.toList());
+    }
 }
