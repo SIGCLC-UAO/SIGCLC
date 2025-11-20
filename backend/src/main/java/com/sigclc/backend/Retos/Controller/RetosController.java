@@ -22,6 +22,8 @@ import com.sigclc.backend.Retos.DTOs.RetosCreateDTO;
 import com.sigclc.backend.Retos.DTOs.RetosResponseDTO;
 import com.sigclc.backend.Retos.DTOs.RetosUpdateDTO;
 import com.sigclc.backend.Retos.Services.IRetosService;
+import com.sigclc.backend.Reuniones.DTOs.GeneroCountDTO;
+import com.sigclc.backend.Reuniones.DTOs.UsuarioActivoDTO;
 
 import jakarta.validation.Valid;
 
@@ -71,6 +73,7 @@ public class RetosController{
         return new ResponseEntity<>(retosService.buscarPorDescripcion(descripcion),HttpStatus.OK);
 
     }
+
 
 
 
@@ -126,6 +129,10 @@ public class RetosController{
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         
     }
+
+
+
+    
 
     
 

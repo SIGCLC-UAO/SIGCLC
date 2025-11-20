@@ -7,7 +7,10 @@ import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
+import com.sigclc.backend.Reuniones.DTOs.GeneroCountDTO;
+import com.sigclc.backend.Reuniones.DTOs.LibroCountDTO;
 import com.sigclc.backend.Reuniones.DTOs.ReunionResponseDTO;
+import com.sigclc.backend.Reuniones.DTOs.UsuarioActivoDTO;
 import com.sigclc.backend.Reuniones.Models.ReunionesModel;
 
 public interface IReunionesRepository extends MongoRepository<ReunionesModel, ObjectId> {
@@ -84,5 +87,40 @@ public interface IReunionesRepository extends MongoRepository<ReunionesModel, Ob
             "extensionesAdjuntas: '$archivosAdjuntos' } }"
     })
     List<ReunionResponseDTO> resumenProximas(Date now);
-    
+
+
+
+    @Aggregation(pipeline = {
+        "{ $match: { libroId: { $ne: null } } }", 
+        "{ $group: { _id: '$libroId', count: { $sum: 1 } } }",   
+        "{ $sort: { count: -1 } }",
+        "{ $limit: 5 }",
+        "{ $project: { _id: 0, libroId: '$_id', count: 1 } }" 
+    })
+    List<LibroCountDTO> obtenerTopLibros(); 
+
+    @Aggregation(pipeline = {
+        "{ $match: { libroId: { $ne: null } } }",
+        "{ $lookup: { from: 'Libros', localField: 'libroId', foreignField: '_id', as: 'libroInfo' } }",
+        "{ $unwind: { path: '$libroInfo', preserveNullAndEmptyArrays: false } }",
+        "{ $match: { 'libroInfo.genero': { $ne: null } } }", 
+        "{ $group: { _id: '$libroInfo.genero', count: { $sum: 1 } } }", 
+        "{ $sort: { count: -1 } }",
+        "{ $limit: 5 }",
+        "{ $project: { _id: 0, genero: '$_id', count: 1 } }"
+    })
+    List<GeneroCountDTO> obtenerTopGeneros();
+
+    @Aggregation(pipeline = {
+        "{ $match: { asistentes: { $ne: null, $exists: true, $not: { $size: 0 } } } }",
+        "{ $unwind: '$asistentes' }",
+        "{ $group: { _id: '$asistentes', totalAsistencias: { $sum: 1 } } }", // Agrupa directo por string
+        "{ $sort: { totalAsistencias: -1 } }",
+        "{ $limit: 10 }",
+        "{ $project: { _id: 0, usuarioId: '$_id', totalAsistencias: 1 } }" // Ya viene como string
+    })
+    List<UsuarioActivoDTO> obtenerUsuariosMasActivos();
+
+
+
 }

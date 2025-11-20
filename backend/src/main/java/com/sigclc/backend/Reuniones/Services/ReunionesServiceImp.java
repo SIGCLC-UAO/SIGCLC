@@ -293,4 +293,6 @@ public class ReunionesServiceImp implements IReunionesService {
     private <T> T tomarUnicoOPrimero(List<T> lista) {
         return (lista == null || lista.isEmpty()) ? null : lista.get(0);
     }
+
+
 }

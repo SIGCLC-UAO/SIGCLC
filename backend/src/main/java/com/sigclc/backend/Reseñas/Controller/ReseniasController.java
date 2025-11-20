@@ -177,4 +177,5 @@ public class ReseniasController {
         service.marcarUtil(idResenia);
         return ResponseEntity.ok("Reseña marcada como útil");
     }
+
 }

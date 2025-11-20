@@ -15,4 +15,5 @@ public interface IReunionesService {
     ReunionResponseDTO actualizar(String reunionId, ReunionUpdateDTO dto);
     void eliminar(String reunionId);
     ReunionResponseDTO resyncExtensiones(String reunionId);
+    
 }

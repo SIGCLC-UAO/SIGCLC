@@ -3,28 +3,42 @@ package com.sigclc.backend.Reuniones.Controllers;
 import java.util.Date;
 import java.util.List;
 
-import jakarta.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sigclc.backend.Reuniones.DTOs.ArchivoDeleteRequestDTO;
 import com.sigclc.backend.Reuniones.DTOs.ArchivoMetaSafeResponseDTO;
 import com.sigclc.backend.Reuniones.DTOs.ArchivoUploadResponseDTO;
+import com.sigclc.backend.Reuniones.DTOs.GeneroCountDTO;
 import com.sigclc.backend.Reuniones.DTOs.InscripcionResponseDTO;
+import com.sigclc.backend.Reuniones.DTOs.LibroCountDTO;
 import com.sigclc.backend.Reuniones.DTOs.ReunionCreateDTO;
 import com.sigclc.backend.Reuniones.DTOs.ReunionResponseDTO;
 import com.sigclc.backend.Reuniones.DTOs.ReunionUpdateDTO;
+import com.sigclc.backend.Reuniones.DTOs.UsuarioActivoDTO;
 import com.sigclc.backend.Reuniones.Services.IReunionesArchivos;
 import com.sigclc.backend.Reuniones.Services.IReunionesAsistentes;
 import com.sigclc.backend.Reuniones.Services.IReunionesListados;
 import com.sigclc.backend.Reuniones.Services.IReunionesService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/reuniones")
@@ -112,7 +126,7 @@ public class ReunionesController {
 
         return reunionesService.resyncExtensiones(reunionId);
     }
-
+    
     /* =========================================================
      *     LISTADOS
      * ========================================================= */
@@ -127,6 +141,25 @@ public class ReunionesController {
         return reunionesListados.listarResumenTodas();
     }
 
+    @GetMapping("/top5-generos")
+        public ResponseEntity<List<GeneroCountDTO>> obtenerTopGeneros() {
+        List<GeneroCountDTO> topGeneros = reunionesListados.obtenerTopGeneros();
+        return new ResponseEntity<>(topGeneros, HttpStatus.OK);
+    }
+
+
+    @GetMapping("/top5-libros")
+        public ResponseEntity<List<LibroCountDTO>> obtenerTopLibros() {
+        List<LibroCountDTO> topLibros = reunionesListados.obtenerTopLibros();
+        return new ResponseEntity<>(topLibros, HttpStatus.OK);
+    }
+
+    @GetMapping("/top-usuarios-activos")
+    public ResponseEntity<List<UsuarioActivoDTO>> obtenerUsuariosMasActivos() {
+        System.out.println("🎯 Endpoint /top-usuarios-activos ejecutado");
+        List<UsuarioActivoDTO> usuariosActivos = reunionesListados.obtenerUsuariosMasActivos();
+        return new ResponseEntity<>(usuariosActivos, HttpStatus.OK);
+    }
     /**
      * Resumen por id de reunión.
      *
@@ -215,6 +248,8 @@ public class ReunionesController {
         return reunionesArchivos.subirArchivos(reunionId, archivosSubidos);
     }
 
+    
+
     /**
      * Descargar un archivo concreto por nombre.
      *
@@ -291,4 +326,8 @@ public class ReunionesController {
 
         return reunionesAsistentes.retirarAsistente(reunionId, usuarioId);
     }
+
+
+
+
 }
